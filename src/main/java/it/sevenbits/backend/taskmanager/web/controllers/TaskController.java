@@ -6,6 +6,7 @@ import it.sevenbits.backend.taskmanager.web.model.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.core.service.validation.IdValidationService;
 
+import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,7 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/tasks")
 public class TaskController {
-    private final TaskRepository repository;
-    private IdValidationService idValidation = new IdValidationService();
+    private final TaskControllerService service;
 
     /**
      * Create controller by some repository
@@ -37,58 +37,14 @@ public class TaskController {
      * @param repository repository for tasks
      */
     public TaskController(final TaskRepository repository) {
-        this.repository = repository;
+        this.service = new TaskControllerService(repository);
     }
 
     /**
-     * Choose text value for updated task
+     * Call service to create new task
      *
-     * @param upd request data
-     * @param old previous task value
-     * @return new text for task
-     */
-    private String updateTaskText(final UpdateTaskRequest upd, final Task old) {
-        return upd.getText() == null ? old.getText() : upd.getText();
-    }
-
-    /**
-     * Choose status value for updated task
-     *
-     * @param upd request data
-     * @param old previous task value
-     * @return new status for task
-     */
-    private String updateTaskStatus(final UpdateTaskRequest upd, final Task old) {
-        return upd.getStatus() == null ? old.getStatus() : upd.getStatus();
-    }
-
-    /**
-     * Get all user's tasks
-     *
-     * @param status status of needed tasks
-     * @return list with tasks or empty list
-     * * Code 200 - successful operation, all tasks returned
-     */
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<List<Task>> getTasksByStatus(
-            @RequestParam(
-                    value = "status",
-                    required = false,
-                    defaultValue = "inbox"
-            ) final String status) {
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(repository.getTasks(status));
-    }
-
-    /**
-     * Create new task
-     *
-     * @param request request object with text for task
-     * @return status code of operation
+     * @param request request from user with data for task
+     * @return ResponseEntity with code of operation
      * * Code 201 - task created;
      * * Code 400 - request invalid or request text are empty
      */
@@ -99,24 +55,32 @@ public class TaskController {
     )
     @ResponseBody
     public ResponseEntity<Void> createTask(@RequestBody @Valid final AddTaskRequest request) {
-        Task task = repository.createTask(request.getText(), "inbox");
-        URI location = UriComponentsBuilder
-                .fromPath("/tasks/")
-                .path(task.getId())
-                .build()
-                .toUri();
-
-        return ResponseEntity
-                .created(location)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .build();
+        return service.createTask(request);
     }
 
     /**
-     * Get task by his ID
+     * Call service to get list of tasks by some status
      *
-     * @param id ID of a task
-     * @return requested task
+     * @param status status of needed tasks
+     * @return ResponseEntity with code of operation
+     * * Code 200 - successful operation, all tasks returned
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<List<Task>> getTasksByStatus(
+            @RequestParam(
+                    value = "status",
+                    required = false,
+                    defaultValue = "inbox"
+            ) final String status) {
+        return service.getTasksByStatus(status);
+    }
+
+    /**
+     * Call service to get task by ID
+     *
+     * @param id ID of a task in repository
+     * @return ResponseEntity with requested task
      * * Code 200 - successful operation;
      * * Code 404 - task by ID not found
      */
@@ -126,31 +90,15 @@ public class TaskController {
     )
     @ResponseBody
     public ResponseEntity<Task> getTasksById(@PathVariable("id") final String id) {
-        if (!idValidation.verify(id)) {
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        }
-
-        Task task = repository.getTask(id);
-        if (task == null) {
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        }
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(task);
+        return service.getTaskById(id);
     }
 
     /**
-     * Update task
+     * Call service to update task by ID
      *
      * @param id      ID of a task
-     * @param request task with updated values
-     * @return response code of operation
+     * @param request new data for task
+     * @return ResponseEntity with code of operation
      * * Code 204 - successful operation;
      * * Code 400 - validation exception;
      * * Code 404 - task by ID not found.
@@ -162,40 +110,14 @@ public class TaskController {
     @ResponseBody
     public ResponseEntity<Void> updateTask(@PathVariable("id") final String id,
                                            @RequestBody @Valid final UpdateTaskRequest request) {
-        if (!idValidation.verify(id)) {
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        }
-
-        Task oldTask = repository.getTask(id);
-        if (oldTask == null) {
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        }
-
-        String updText = updateTaskText(request, oldTask);
-        String updStatus = updateTaskStatus(request, oldTask);
-        Task updated = new Task(
-                oldTask.getId(),
-                updText,
-                updStatus,
-                oldTask.getCreatedAt()
-        );
-        repository.updateTask(updated.getId(), updated);
-
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .build();
+        return service.updateTask(id, request);
     }
 
     /**
-     * Delete task
+     * Call service to delete task from repository
      *
      * @param id ID of a task
-     * @return response code of operation
+     * @return ResponseEntity with code of operation
      * * Code 200 - successful operation;
      * * Code 404 - task by ID not found.
      */
@@ -205,22 +127,6 @@ public class TaskController {
     )
     @ResponseBody
     public ResponseEntity<Void> deleteTask(@PathVariable("id") final String id) {
-        if (!idValidation.verify(id)) {
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        }
-
-        Task removed = repository.removeTask(id);
-        if (removed == null) {
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        }
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .build();
+        return service.deleteTask(id);
     }
 }
