@@ -3,6 +3,8 @@ package it.sevenbits.backend.taskmanager.core.repository;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import org.springframework.jdbc.core.JdbcOperations;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +26,21 @@ public class DatabaseTaskRepository implements TaskRepository {
         this.jdbcOperations = jdbcOperations;
     }
 
+    /**
+     * Convert ResultSet value to Task
+     *
+     * @param resultSet result set with data from database
+     * @return Task for data from ResultSet
+     * @throws SQLException if some troubles with ResultSet happen
+     */
+    private Task getTaskFromResultSet(final ResultSet resultSet) throws SQLException {
+        String taskId = resultSet.getString(1);
+        String text = resultSet.getString(2);
+        String status1 = resultSet.getString(3);
+        String creationDate = resultSet.getString(4);
+        return new Task(taskId, text, status1, creationDate);
+    }
+
     @Override
     public Task createTask(final String text, final String status) {
         String id = UUID.randomUUID().toString();
@@ -37,29 +54,36 @@ public class DatabaseTaskRepository implements TaskRepository {
 
     @Override
     public Task getTask(final String taskId) {
-        throw new UnsupportedOperationException("Not ready yet");
+        return jdbcOperations.queryForObject(
+                "SELECT id, text, status, createdAt FROM tasks WHERE id=?",
+                (resultSet, i) -> getTaskFromResultSet(resultSet),
+                taskId
+        );
     }
 
     @Override
     public List<Task> getTasks(final String status) {
         return jdbcOperations.query(
                 "SELECT id, text, status, createdAt FROM tasks",
-                (resultSet, i) -> {
-                    String taskId = resultSet.getString(1);
-                    String text = resultSet.getString(2);
-                    String status1 = resultSet.getString(3);
-                    String creationDate = resultSet.getString(4);
-                    return new Task(taskId, text, status1, creationDate);
-                });
+                (resultSet, i) -> getTaskFromResultSet(resultSet)
+        );
     }
 
     @Override
     public Task removeTask(final String taskId) {
-        throw new UnsupportedOperationException("Not ready yet");
+        Task toDelete = getTask(taskId);
+        jdbcOperations.update(
+                "DELETE FROM tasks WHERE id=?",
+                taskId
+        );
+        return toDelete;
     }
 
     @Override
     public void updateTask(final String taskId, final Task updated) {
-        throw new UnsupportedOperationException("Not ready yet");
+        jdbcOperations.update(
+                "UPDATE tasks SET text=?, status=? WHERE id=?",
+                updated.getText(), updated.getStatus(), taskId
+        );
     }
 }
