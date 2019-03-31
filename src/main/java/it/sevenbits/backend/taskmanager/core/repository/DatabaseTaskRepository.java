@@ -46,7 +46,7 @@ public class DatabaseTaskRepository implements TaskRepository {
         String createdAt = dateFormat.format(new Date());
         jdbcOperations.update(
                 "INSERT INTO tasks VALUES(?,?,?,?,?)",
-                id, text, status, createdAt
+                id, text, status, createdAt, createdAt
         );
         return new Task(id, text, status, createdAt, createdAt);
     }
