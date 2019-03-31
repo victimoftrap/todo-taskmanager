@@ -2,10 +2,12 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
+import it.sevenbits.backend.taskmanager.web.service.TaskService;
+import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.model.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.UpdateTaskRequest;
-import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -26,7 +30,7 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/tasks")
 public class TaskController {
-    private final TaskControllerService service;
+    private final TaskService service;
 
     /**
      * Create controller by some repository
@@ -52,7 +56,24 @@ public class TaskController {
     )
     @ResponseBody
     public ResponseEntity<Void> createTask(@RequestBody @Valid final AddTaskRequest request) {
-        return service.createTask(request);
+        Task task = service.createTask(request);
+        if (task == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .build();
+        }
+
+        URI location = UriComponentsBuilder
+                .fromPath("/tasks/")
+                .path(task.getId())
+                .build()
+                .toUri();
+
+        return ResponseEntity
+                .created(location)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .build();
     }
 
     /**
@@ -65,12 +86,12 @@ public class TaskController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<Task>> getTasksByStatus(
-            @RequestParam(
-                    value = "status",
-                    required = false,
-                    defaultValue = "inbox"
-            ) final String status) {
-        return service.getTasksByStatus(status);
+            @RequestParam(value = "status", required = false, defaultValue = "inbox") final String status) {
+        List<Task> tasks = service.getTasksByStatus(status);
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(tasks);
     }
 
     /**
@@ -87,7 +108,16 @@ public class TaskController {
     )
     @ResponseBody
     public ResponseEntity<Task> getTasksById(@PathVariable("id") final String id) {
-        return service.getTaskById(id);
+        Task task = service.getTaskById(id);
+        if (task == null) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(task);
     }
 
     /**
@@ -107,7 +137,16 @@ public class TaskController {
     @ResponseBody
     public ResponseEntity<Void> updateTask(@PathVariable("id") final String id,
                                            @RequestBody @Valid final UpdateTaskRequest request) {
-        return service.updateTask(id, request);
+        Task task = service.updateTaskById(id, request);
+        if (task == null) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .build();
     }
 
     /**
@@ -123,7 +162,16 @@ public class TaskController {
             method = RequestMethod.DELETE
     )
     @ResponseBody
-    public ResponseEntity<Void> deleteTask(@PathVariable("id") final String id) {
-        return service.deleteTask(id);
+    public ResponseEntity<Void> removeTask(@PathVariable("id") final String id) {
+        Task task = service.removeTaskById(id);
+        if (task == null) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .build();
     }
 }
