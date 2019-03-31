@@ -145,7 +145,8 @@ public class TaskControllerService {
                 oldTask.getId(),
                 updText,
                 updStatus,
-                oldTask.getCreatedAt()
+                oldTask.getCreatedAt(),
+                oldTask.getUpdatedAt()
         );
         repository.updateTask(updated.getId(), updated);
 

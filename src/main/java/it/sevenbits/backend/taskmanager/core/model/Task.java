@@ -27,6 +27,9 @@ public class Task {
     @NotBlank
     private final String createdAt;
 
+    @NotBlank
+    private final String updatedAt;
+
     /**
      * Create task
      *
@@ -39,11 +42,13 @@ public class Task {
     public Task(@JsonProperty("id") final String id,
                 @JsonProperty("text") final String text,
                 @JsonProperty("status") final String status,
-                @JsonProperty("createdAt") final String createdAt) {
+                @JsonProperty("createdAt") final String createdAt,
+                @JsonProperty("updatedAt") final String updatedAt) {
         this.id = id;
         this.text = text;
         this.status = status;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     /**
@@ -80,6 +85,15 @@ public class Task {
      */
     public String getCreatedAt() {
         return createdAt;
+    }
+
+    /**
+     * Get last update date of a task
+     *
+     * @return string with date
+     */
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
     @Override
