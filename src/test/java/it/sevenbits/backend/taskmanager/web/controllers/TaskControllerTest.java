@@ -3,7 +3,6 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.AddTaskRequest;
-import it.sevenbits.backend.taskmanager.web.model.UpdateTaskRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,7 @@ public class TaskControllerTest {
 
     // 201
     @Test
-    public void taskSuccessfullyCreated() {
+    public void testTaskSuccessfullyCreated() {
         Task mockTask = mock(Task.class);
         when(mockTaskRepository.createTask(anyString(), anyString())).thenReturn(mockTask);
 
@@ -40,14 +39,14 @@ public class TaskControllerTest {
 
     // 400
     @Test
-    public void nonValidTaskText() {
+    public void testNonValidTaskText() {
         ResponseEntity<Void> answer = taskController.createTask(new AddTaskRequest(""));
         assertEquals(HttpStatus.BAD_REQUEST, answer.getStatusCode());
     }
 
     // 400
     @Test
-    public void nullTaskText() {
+    public void testNullTaskText() {
         ResponseEntity<Void> answer = taskController.createTask(new AddTaskRequest(null));
         assertEquals(HttpStatus.BAD_REQUEST, answer.getStatusCode());
     }
@@ -79,7 +78,7 @@ public class TaskControllerTest {
 
     // 200
     @Test
-    public void testGetBookById() {
+    public void testGetTaskById() {
         String id = UUID.randomUUID().toString();
         Task mockTask = mock(Task.class);
         when(mockTaskRepository.getTask(anyString())).thenReturn(mockTask);
@@ -101,7 +100,7 @@ public class TaskControllerTest {
 
     // 200
     @Test
-    public void taskSuccessfullyDeleted() {
+    public void testTaskSuccessfullyDeleted() {
         String id = UUID.randomUUID().toString();
         Task mockTask = mock(Task.class);
         when(mockTaskRepository.removeTask(anyString())).thenReturn(mockTask);
@@ -115,7 +114,7 @@ public class TaskControllerTest {
 
     // 404
     @Test
-    public void taskNotDeleted() {
+    public void testTaskNotDeleted() {
         String id = "abeceda";
         ResponseEntity<Void> answer = taskController.removeTask(id);
         assertEquals(HttpStatus.NOT_FOUND, answer.getStatusCode());
