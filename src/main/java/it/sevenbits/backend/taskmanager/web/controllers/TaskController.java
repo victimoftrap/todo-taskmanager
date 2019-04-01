@@ -143,6 +143,12 @@ public class TaskController {
                     .notFound()
                     .build();
         }
+        if (task.getId() == null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .build();
+        }
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

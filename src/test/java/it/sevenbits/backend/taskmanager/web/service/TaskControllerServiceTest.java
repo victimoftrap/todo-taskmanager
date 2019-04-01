@@ -63,4 +63,15 @@ public class TaskControllerServiceTest {
         verify(mockTaskRepository, times(1)).removeTask(anyString());
         assertEquals(mockTask, answer);
     }
+
+    @Test
+    public void testUpdateTask() {
+        String id = UUID.randomUUID().toString();
+        Task mockTask = mock(Task.class);
+        doAnswer(invocationOnMock -> {
+            Task argument = invocationOnMock.getArgument(0);
+            assertEquals(mockTask, argument);
+            return null;
+        }).when(mockTaskRepository).updateTask(id, mockTask);
+    }
 }

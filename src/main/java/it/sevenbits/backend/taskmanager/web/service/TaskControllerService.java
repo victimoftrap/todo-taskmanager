@@ -72,7 +72,7 @@ public class TaskControllerService implements TaskService {
 
         Task oldTask = repository.getTask(id);
         if (oldTask == null) {
-            return null;
+            return new Task(null, null, null, null, null);
         }
 
         String updText = updateTaskText(request, oldTask);
