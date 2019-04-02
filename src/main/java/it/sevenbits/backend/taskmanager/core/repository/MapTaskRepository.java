@@ -2,13 +2,14 @@ package it.sevenbits.backend.taskmanager.core.repository;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
 
-import java.text.DateFormat;
+import java.util.UUID;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.UUID;
+import java.util.Comparator;
 import java.util.Date;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 /**
@@ -18,6 +19,8 @@ public class MapTaskRepository implements TaskRepository {
     private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     private DateFormat dateFormat;
     private Map<String, Task> tasks;
+    private Comparator<Task> ascComparator;
+    private Comparator<Task> descComparator;
 
     /**
      * Create repository
@@ -27,6 +30,9 @@ public class MapTaskRepository implements TaskRepository {
     public MapTaskRepository(final Map<String, Task> tasksContainer) {
         tasks = tasksContainer;
         dateFormat = new SimpleDateFormat(DATE_FORMAT);
+
+        ascComparator = (t1, t2) -> t1.getCreatedAt().compareTo(t2.getCreatedAt());
+        descComparator = (t1, t2) -> t2.getCreatedAt().compareTo(t1.getCreatedAt());
     }
 
     @Override
@@ -45,14 +51,24 @@ public class MapTaskRepository implements TaskRepository {
     }
 
     @Override
-    public List<Task> getTasks(final String status) {
+    public List<Task> getTasks(final String status, final String order, final int page, final int size) {
+        int offset = (page - 1) * size;
         List<Task> result = new ArrayList<>();
+
+        int i = 0;
         for (Map.Entry<String, Task> stringTaskEntry : tasks.entrySet()) {
-            Task task = stringTaskEntry.getValue();
-            if (task.getStatus().equals(status)) {
-                result.add(task);
+            if (i == offset + size) {
+                break;
             }
+            if (i >= offset) {
+                Task task = stringTaskEntry.getValue();
+                if (task.getStatus().equals(status)) {
+                    result.add(task);
+                }
+            }
+            i++;
         }
+        result.sort("asc".equals(order) ? ascComparator : descComparator);
         return Collections.unmodifiableList(result);
     }
 

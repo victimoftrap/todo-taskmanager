@@ -6,15 +6,15 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.TimeZone;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.*;
-import java.time.temporal.TemporalAccessor;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
 
 /**
  * Implementation of task repository based on connection to database
@@ -71,12 +71,18 @@ public class DatabaseTaskRepository implements TaskRepository {
     }
 
     @Override
-    public List<Task> getTasks(final String status) {
-        return jdbcOperations.query(
-                "SELECT id, text, status, createdAt, updatedAt FROM tasks WHERE status=?",
+    public List<Task> getTasks(final String status, final String order, final int page, final int size) {
+        String orderField = "createdAt";
+        int offset = (page - 1) * size;
+        List<Task> result = jdbcOperations.query(
+                "SELECT id, text, status, createdAt, updatedAd FROM tasks WHERE status=? ORDER BY ? ? OFFSET ? LIMIT ?",
                 taskMapper,
-                status
+                status,
+                orderField, order,
+                offset,
+                size
         );
+        return Collections.unmodifiableList(result);
     }
 
     @Override

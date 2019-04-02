@@ -3,10 +3,12 @@ package it.sevenbits.backend.taskmanager.web.service;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.core.service.validation.IdValidationService;
-import it.sevenbits.backend.taskmanager.web.model.AddTaskRequest;
-import it.sevenbits.backend.taskmanager.web.model.UpdateTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service that validates ID from request and generates responses
@@ -52,8 +54,16 @@ public class TaskControllerService implements TaskService {
     }
 
     @Override
-    public List<Task> getTasksByStatus(final String status) {
-        return repository.getTasks(status);
+    public List<Task> getTasksByStatus(final GetTasksRequest request) {
+        String status = request.getStatus();
+        String order = request.getOrder();
+        int page = Optional
+                .ofNullable(request.getPage())
+                .orElse(GetTasksRequest.DEFAULT_PAGES);
+        int size = Optional
+                .ofNullable(request.getSize())
+                .orElse(GetTasksRequest.DEFAULT_SIZE);
+        return null;
     }
 
     @Override

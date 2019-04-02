@@ -2,7 +2,7 @@ package it.sevenbits.backend.taskmanager.web.service;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
-import it.sevenbits.backend.taskmanager.web.model.AddTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import org.junit.Before;
 import org.junit.Test;
 

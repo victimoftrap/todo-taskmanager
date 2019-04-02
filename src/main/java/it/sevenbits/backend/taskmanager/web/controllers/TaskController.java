@@ -4,8 +4,8 @@ import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.service.TaskService;
 import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
-import it.sevenbits.backend.taskmanager.web.model.AddTaskRequest;
-import it.sevenbits.backend.taskmanager.web.model.UpdateTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import java.net.URI;
 import java.util.List;
@@ -86,12 +88,17 @@ public class TaskController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<Task>> getTasksByStatus(
-            @RequestParam(value = "status", required = false, defaultValue = "inbox") final String status) {
-        List<Task> tasks = service.getTasksByStatus(status);
+            @RequestParam(value = "status", required = false, defaultValue = "inbox") final String status,
+            @RequestParam(value = "order", required = false, defaultValue = "desc") final String order,
+            @RequestParam(value = "page", required = false) final Integer page,
+            @RequestParam(value = "size", required = false) @Max(50) @Min(10) final Integer size
+    ) {
+        /*List<Task> tasks = service.getTasksByStatus(status);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(tasks);
+                .body(tasks);*/
+        return null;
     }
 
     /**
