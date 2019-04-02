@@ -6,10 +6,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -29,6 +33,7 @@ public class DatabaseTaskRepository implements TaskRepository {
     public DatabaseTaskRepository(final JdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
         this.dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         this.taskMapper = (resultSet, i) -> {
             String taskId = resultSet.getString(1);
@@ -43,12 +48,13 @@ public class DatabaseTaskRepository implements TaskRepository {
     @Override
     public Task createTask(final String text, final String status) {
         String id = UUID.randomUUID().toString();
-        String createdAt = dateFormat.format(new Date());
+        // Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC()));
+        Timestamp createTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
         jdbcOperations.update(
                 "INSERT INTO tasks VALUES(?,?,?,?,?)",
-                id, text, status, createdAt, createdAt
+                id, text, status, createTimestamp, createTimestamp
         );
-        return new Task(id, text, status, createdAt, createdAt);
+        return new Task(id, text, status, createTimestamp.toString(), createTimestamp.toString());
     }
 
     @Override
@@ -85,10 +91,11 @@ public class DatabaseTaskRepository implements TaskRepository {
 
     @Override
     public void updateTask(final String taskId, final Task updated) {
-        String updateDate = dateFormat.format(new Date());
+        // Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC()));
+        Timestamp createTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
         jdbcOperations.update(
                 "UPDATE tasks SET text=?, status=?, updatedAt=? WHERE id=?",
-                updated.getText(), updated.getStatus(), updateDate, taskId
+                updated.getText(), updated.getStatus(), createTimestamp, taskId
         );
     }
 }
