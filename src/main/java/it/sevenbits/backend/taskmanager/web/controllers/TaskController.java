@@ -2,6 +2,7 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
+import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.service.TaskService;
 import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
@@ -82,7 +83,10 @@ public class TaskController {
      * Call service to get list of tasks by some status
      *
      * @param status status of needed tasks
-     * @return ResponseEntity with code of operation
+     * @param order  wanted order of tasks
+     * @param page   number of current page
+     * @param size   size of page with tasks
+     * @return list with tasks
      * * Code 200 - successful operation, all tasks returned
      */
     @RequestMapping(method = RequestMethod.GET)
@@ -93,12 +97,11 @@ public class TaskController {
             @RequestParam(value = "page", required = false) final Integer page,
             @RequestParam(value = "size", required = false) @Max(50) @Min(10) final Integer size
     ) {
-        /*List<Task> tasks = service.getTasksByStatus(status);
+        List<Task> tasks = service.getTasksByStatus(new GetTasksRequest(status, order, page, size));
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(tasks);*/
-        return null;
+                .body(tasks);
     }
 
     /**

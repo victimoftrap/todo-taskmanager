@@ -48,7 +48,6 @@ public class DatabaseTaskRepository implements TaskRepository {
     @Override
     public Task createTask(final String text, final String status) {
         String id = UUID.randomUUID().toString();
-        // Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC()));
         Timestamp createTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
         jdbcOperations.update(
                 "INSERT INTO tasks VALUES(?,?,?,?,?)",
@@ -72,13 +71,17 @@ public class DatabaseTaskRepository implements TaskRepository {
 
     @Override
     public List<Task> getTasks(final String status, final String order, final int page, final int size) {
-        String orderField = "createdAt";
+        String ascQuery =
+                "SELECT id,text,status,createdAt,updatedAt FROM tasks WHERE status=? ORDER BY createdAt ASC OFFSET ? LIMIT ?";
+        String descQuery =
+                "SELECT id,text,status,createdAt,updatedAt FROM tasks WHERE status=? ORDER BY createdAt DESC OFFSET ? LIMIT ?";
+        String query = "asc".equalsIgnoreCase(order) ? ascQuery : descQuery;
         int offset = (page - 1) * size;
+
         List<Task> result = jdbcOperations.query(
-                "SELECT id, text, status, createdAt, updatedAd FROM tasks WHERE status=? ORDER BY ? ? OFFSET ? LIMIT ?",
+                query,
                 taskMapper,
                 status,
-                orderField, order,
                 offset,
                 size
         );
@@ -97,7 +100,6 @@ public class DatabaseTaskRepository implements TaskRepository {
 
     @Override
     public void updateTask(final String taskId, final Task updated) {
-        // Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC()));
         Timestamp createTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
         jdbcOperations.update(
                 "UPDATE tasks SET text=?, status=?, updatedAt=? WHERE id=?",

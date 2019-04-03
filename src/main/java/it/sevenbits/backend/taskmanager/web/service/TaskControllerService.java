@@ -63,7 +63,7 @@ public class TaskControllerService implements TaskService {
         int size = Optional
                 .ofNullable(request.getSize())
                 .orElse(GetTasksRequest.DEFAULT_SIZE);
-        return null;
+        return repository.getTasks(status, order, page, size);
     }
 
     @Override
