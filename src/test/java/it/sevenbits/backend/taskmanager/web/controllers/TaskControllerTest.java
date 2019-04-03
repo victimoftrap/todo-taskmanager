@@ -121,4 +121,47 @@ public class TaskControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, answer.getStatusCode());
         assertNull(answer.getBody());
     }
+
+    // 204
+    @Test
+    public void testUpdateTask() {
+        String id = UUID.randomUUID().toString();
+        Task mockTask = mock(Task.class);
+        when(mockTask.getId()).thenReturn(id);
+        UpdateTaskRequest request = new UpdateTaskRequest("text", "status");
+
+        when(mockTaskRepository.getTask(anyString())).thenReturn(mockTask);
+        doAnswer(invocationOnMock -> {
+            Task argument = invocationOnMock.getArgument(0);
+            assertEquals(mockTask, argument);
+            return argument;
+        }).when(mockTaskRepository).updateTask(id, mockTask);
+
+        ResponseEntity<Void> answer = taskController.updateTask(id, request);
+        verify(mockTaskRepository, times(1)).getTask(id);
+        assertEquals(HttpStatus.NO_CONTENT, answer.getStatusCode());
+        assertNull(answer.getBody());
+    }
+
+    // 404
+    @Test
+    public void testCannotUpdateNotExistingTask() {
+        String id = UUID.randomUUID().toString();
+        when(mockTaskRepository.getTask(anyString())).thenReturn(null);
+
+        ResponseEntity<Void> answer = taskController.updateTask(id, new UpdateTaskRequest("text", "status"));
+        verify(mockTaskRepository, times(1)).getTask(id);
+        assertEquals(HttpStatus.NOT_FOUND, answer.getStatusCode());
+        assertNull(answer.getBody());
+    }
+
+    // 400
+    @Test
+    public void testUpdateTaskByInvalidId() {
+        String id = "hehded";
+
+        ResponseEntity<Void> answer = taskController.updateTask(id, new UpdateTaskRequest("text", "status"));
+        assertEquals(HttpStatus.BAD_REQUEST, answer.getStatusCode());
+        assertNull(answer.getBody());
+    }
 }

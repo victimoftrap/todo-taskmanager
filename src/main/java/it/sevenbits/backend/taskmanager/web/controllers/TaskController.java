@@ -140,13 +140,13 @@ public class TaskController {
         Task task = service.updateTaskById(id, request);
         if (task == null) {
             return ResponseEntity
-                    .notFound()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .build();
         }
         if (task.getId() == null) {
             return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .notFound()
                     .build();
         }
         return ResponseEntity
