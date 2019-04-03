@@ -81,4 +81,14 @@ public class MapTaskRepository implements TaskRepository {
     public void updateTask(final String taskId, final Task updated) {
         tasks.replace(taskId, updated);
     }
+
+    @Override
+    public int getCountTasks(final String status) {
+        int count = (int) tasks
+                .values()
+                .stream()
+                .filter(t -> status.equals(t.getStatus()))
+                .count();
+        return count;
+    }
 }

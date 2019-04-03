@@ -4,6 +4,7 @@ import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface TaskService {
      * @param request request for getting tasks
      * @return list with tasks or empty list
      */
-    List<Task> getTasksByStatus(GetTasksRequest request);
+    GetTasksResponse getTasksByStatus(GetTasksRequest request);
 
     /**
      * Get task by his ID

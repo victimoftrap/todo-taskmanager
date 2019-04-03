@@ -51,4 +51,12 @@ public interface TaskRepository {
      * @param updated new task
      */
     void updateTask(String taskId, Task updated);
+
+    /**
+     * Get count of tasks with status
+     *
+     * @param status status of a tasks
+     * @return quantity of tasks
+     */
+    int getCountTasks(String status);
 }

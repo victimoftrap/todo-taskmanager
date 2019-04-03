@@ -3,6 +3,7 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
+import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 import it.sevenbits.backend.taskmanager.web.service.TaskService;
 import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
@@ -91,17 +92,17 @@ public class TaskController {
      */
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<Task>> getTasksByStatus(
+    public ResponseEntity<?> getTasksByStatus(
             @RequestParam(value = "status", required = false, defaultValue = "inbox") final String status,
             @RequestParam(value = "order", required = false, defaultValue = "desc") final String order,
             @RequestParam(value = "page", required = false) final Integer page,
             @RequestParam(value = "size", required = false) @Max(50) @Min(10) final Integer size
     ) {
-        List<Task> tasks = service.getTasksByStatus(new GetTasksRequest(status, order, page, size));
+        GetTasksResponse response = service.getTasksByStatus(new GetTasksRequest(status, order, page, size));
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(tasks);
+                .body(response);
     }
 
     /**

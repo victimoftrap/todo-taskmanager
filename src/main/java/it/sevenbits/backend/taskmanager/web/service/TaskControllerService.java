@@ -3,10 +3,14 @@ package it.sevenbits.backend.taskmanager.web.service;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.core.service.validation.IdValidationService;
+import it.sevenbits.backend.taskmanager.web.model.meta.GetTasksMetaData;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,13 +52,23 @@ public class TaskControllerService implements TaskService {
         return upd.getStatus() == null ? old.getStatus() : upd.getStatus();
     }
 
+    private String buildUriFor(final String status, final String order, final int page, final int size) {
+        return UriComponentsBuilder
+                .fromPath("/tasks")
+                .queryParam("status", status)
+                .queryParam("order", order)
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .toUriString();
+    }
+
     @Override
     public Task createTask(final AddTaskRequest request) {
         return repository.createTask(request.getText(), "inbox");
     }
 
     @Override
-    public List<Task> getTasksByStatus(final GetTasksRequest request) {
+    public GetTasksResponse getTasksByStatus(final GetTasksRequest request) {
         String status = request.getStatus();
         String order = request.getOrder();
         int page = Optional
@@ -63,7 +77,18 @@ public class TaskControllerService implements TaskService {
         int size = Optional
                 .ofNullable(request.getSize())
                 .orElse(GetTasksRequest.DEFAULT_SIZE);
-        return repository.getTasks(status, order, page, size);
+
+        List<Task> tasks = repository.getTasks(status, order, page, size);
+
+        int totalCount = repository.getCountTasks(status);
+        int pagesCount = (int) Math.ceil((double) totalCount / size);
+
+        String firstPage = buildUriFor(status, order, 1, size);
+        String lastPage = buildUriFor(status, order, pagesCount, size);
+        String nextPage = page == pagesCount ? "" : buildUriFor(status, order, page + 1, size);
+        String prevPage = page == 1 ? "" : buildUriFor(status, order, page - 1, size);
+        GetTasksMetaData meta = new GetTasksMetaData(totalCount, page, size, nextPage, prevPage, firstPage, lastPage);
+        return new GetTasksResponse(meta, tasks);
     }
 
     @Override

@@ -6,13 +6,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.TimeZone;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -105,5 +104,17 @@ public class DatabaseTaskRepository implements TaskRepository {
                 "UPDATE tasks SET text=?, status=?, updatedAt=? WHERE id=?",
                 updated.getText(), updated.getStatus(), createTimestamp, taskId
         );
+    }
+
+    @Override
+    public int getCountTasks(final String status) {
+        Integer count = jdbcOperations.queryForObject(
+                "SELECT COUNT(*) FROM tasks WHERE status=?",
+                (resultSet, i) -> resultSet.getInt(1),
+                status
+        );
+        return Optional
+                .ofNullable(count)
+                .orElse(0);
     }
 }
