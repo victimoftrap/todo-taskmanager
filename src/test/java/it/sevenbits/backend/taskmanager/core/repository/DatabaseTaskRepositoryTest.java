@@ -7,11 +7,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -80,5 +80,61 @@ public class DatabaseTaskRepositoryTest {
                         eq(id)
                 );
         assertNull(answer);
+    }
+
+    @Test
+    public void testCreateTask() {
+        String text = "text";
+        String status = "inbox";
+        when(mockJdbcOperations.update(anyString(), anyString(), anyString(),
+                anyString(), any(Timestamp.class), any(Timestamp.class))).thenReturn(1);
+
+        Task task = taskRepository.createTask(text, status);
+
+        assertNotNull(task);
+        assertEquals(text, task.getText());
+        assertEquals(status, task.getStatus());
+        verify(mockJdbcOperations, times(1)).update(
+                eq("INSERT INTO tasks VALUES(?,?,?,?,?)"),
+                eq(task.getId()),
+                eq(text),
+                eq(status),
+                eq(Timestamp.valueOf(task.getCreatedAt())),
+                eq(Timestamp.valueOf(task.getUpdatedAt()))
+        );
+    }
+
+    @Test
+    public void testRemoveTaskById() {
+        String id = UUID.randomUUID().toString();
+        Task mockTask = mock(Task.class);
+        when(mockJdbcOperations.queryForObject(anyString(), any(RowMapper.class), anyString())).thenReturn(mockTask);
+        when(mockJdbcOperations.update(anyString(), anyString())).thenReturn(1);
+
+        Task answer = taskRepository.removeTask(id);
+        assertNotNull(answer);
+        verify(mockJdbcOperations, times(1)).update(
+                eq("DELETE FROM tasks WHERE id=?"),
+                eq(id)
+        );
+    }
+
+    @Test
+    public void testUpdateTaskById() {
+        String id = UUID.randomUUID().toString();
+        String text = "text";
+        String status = "inbox";
+        Task mockTask = mock(Task.class);
+
+        when(mockJdbcOperations.update(anyString(), anyString(), anyString(), any(Timestamp.class), anyString())).thenReturn(1);
+
+        taskRepository.updateTask(id, mockTask);
+        verify(mockJdbcOperations, times(1)).update(
+                eq("UPDATE tasks SET text=?, status=?, updatedAt=? WHERE id=?"),
+                eq(text),
+                eq(status),
+                any(Timestamp.class),
+                eq(id)
+        );
     }
 }
