@@ -125,6 +125,8 @@ public class DatabaseTaskRepositoryTest {
         String text = "text";
         String status = "inbox";
         Task mockTask = mock(Task.class);
+        when(mockTask.getText()).thenReturn(text);
+        when(mockTask.getStatus()).thenReturn(status);
 
         when(mockJdbcOperations.update(anyString(), anyString(), anyString(), any(Timestamp.class), anyString())).thenReturn(1);
 
