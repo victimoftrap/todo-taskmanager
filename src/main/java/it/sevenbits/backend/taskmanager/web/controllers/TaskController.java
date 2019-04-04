@@ -26,7 +26,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import java.net.URI;
-import java.util.List;
 
 /**
  * Class-mediator that would return data from repository to user
@@ -96,7 +95,7 @@ public class TaskController {
             @RequestParam(value = "status", required = false, defaultValue = "inbox") final String status,
             @RequestParam(value = "order", required = false, defaultValue = "desc") final String order,
             @RequestParam(value = "page", required = false) final Integer page,
-            @RequestParam(value = "size", required = false) @Max(50) @Min(10) final Integer size
+            @RequestParam(value = "size", required = false) @Valid @Max(50) @Min(10) final Integer size
     ) {
         GetTasksResponse response = service.getTasksByStatus(new GetTasksRequest(status, order, page, size));
         return ResponseEntity

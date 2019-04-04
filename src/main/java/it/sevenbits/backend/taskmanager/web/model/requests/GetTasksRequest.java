@@ -6,14 +6,10 @@ import java.util.Objects;
  * Request for getting tasks from repository
  */
 public class GetTasksRequest {
-    /**
-     * Default number of pages
-     */
-    public static int DEFAULT_PAGES = 1;
-    /**
-     * Default size of page
-     */
-    public static int DEFAULT_SIZE = 25;
+    private String DEFAULT_STATUS = "inbox";
+    private String DEFAULT_ORDER = "desc";
+    private int DEFAULT_PAGES = 1;
+    private int DEFAULT_SIZE = 25;
     private String status;
     private String order;
     private Integer page;
@@ -22,7 +18,7 @@ public class GetTasksRequest {
     /**
      * Create request for getting tasks from repository
      *
-     * @param status needed status of tasks
+     * @param status wanted status of tasks
      * @param order  wanted order of date of tasks
      * @param page   number of page
      * @param size   size of page with tasks
@@ -35,19 +31,19 @@ public class GetTasksRequest {
     }
 
     private void setStatus(final String status) {
-        this.status = status;
+        this.status = status != null ? status : DEFAULT_STATUS;
     }
 
     private void setOrder(final String order) {
-        this.order = order;
+        this.order = order != null ? order : DEFAULT_ORDER;
     }
 
     private void setPage(final Integer page) {
-        this.page = page;
+        this.page = page != null ? page : DEFAULT_PAGES;
     }
 
     private void setSize(final Integer size) {
-        this.size = size;
+        this.size = size != null ? size : DEFAULT_SIZE;
     }
 
     /**

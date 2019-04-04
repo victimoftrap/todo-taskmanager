@@ -6,8 +6,6 @@ import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 
-import java.util.List;
-
 /**
  * Interface for work with tasks in server
  */

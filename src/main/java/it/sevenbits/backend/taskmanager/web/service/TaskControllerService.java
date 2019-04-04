@@ -10,9 +10,7 @@ import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service that validates ID from request and generates responses
@@ -52,6 +50,15 @@ public class TaskControllerService implements TaskService {
         return upd.getStatus() == null ? old.getStatus() : upd.getStatus();
     }
 
+    /**
+     * Build URI for task list page
+     *
+     * @param status status of a tasks
+     * @param order  order for list
+     * @param page   number of a page
+     * @param size   size of a page
+     * @return
+     */
     private String buildUriFor(final String status, final String order, final int page, final int size) {
         return UriComponentsBuilder
                 .fromPath("/tasks")
@@ -71,12 +78,8 @@ public class TaskControllerService implements TaskService {
     public GetTasksResponse getTasksByStatus(final GetTasksRequest request) {
         String status = request.getStatus();
         String order = request.getOrder();
-        int page = Optional
-                .ofNullable(request.getPage())
-                .orElse(GetTasksRequest.DEFAULT_PAGES);
-        int size = Optional
-                .ofNullable(request.getSize())
-                .orElse(GetTasksRequest.DEFAULT_SIZE);
+        int page = request.getPage();
+        int size = request.getSize();
 
         List<Task> tasks = repository.getTasks(status, order, page, size);
 
