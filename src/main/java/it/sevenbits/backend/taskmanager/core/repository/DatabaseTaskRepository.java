@@ -37,11 +37,11 @@ public class DatabaseTaskRepository implements TaskRepository {
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         this.taskMapper = (resultSet, i) -> {
-            String taskId = resultSet.getString(1);
-            String taskText = resultSet.getString(2);
-            String taskStatus = resultSet.getString(3);
-            String creationDate = resultSet.getString(4);
-            String updateDate = resultSet.getString(5);
+            String taskId = resultSet.getString("id");
+            String taskText = resultSet.getString("text");
+            String taskStatus = resultSet.getString("status");
+            String creationDate = resultSet.getString("createdAt");
+            String updateDate = resultSet.getString("updatedAt");
             return new Task(taskId, taskText, taskStatus, creationDate, updateDate);
         };
     }
@@ -101,10 +101,10 @@ public class DatabaseTaskRepository implements TaskRepository {
 
     @Override
     public void updateTask(final String taskId, final Task updated) {
-        Timestamp createTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
+        Timestamp updateTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
         jdbcOperations.update(
                 "UPDATE tasks SET text=?, status=?, updatedAt=? WHERE id=?",
-                updated.getText(), updated.getStatus(), createTimestamp, taskId
+                updated.getText(), updated.getStatus(), updateTimestamp, taskId
         );
     }
 

@@ -3,6 +3,7 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;

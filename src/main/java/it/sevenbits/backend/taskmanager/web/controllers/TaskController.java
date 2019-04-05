@@ -1,5 +1,6 @@
 package it.sevenbits.backend.taskmanager.web.controllers;
 
+import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
@@ -92,10 +93,10 @@ public class TaskController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<?> getTasksByStatus(
-            @RequestParam(value = "status", required = false, defaultValue = "inbox") final String status,
-            @RequestParam(value = "order", required = false, defaultValue = "desc") final String order,
+            @RequestParam(value = "status", required = false) final String status,
+            @RequestParam(value = "order", required = false) final String order,
             @RequestParam(value = "page", required = false) final Integer page,
-            @RequestParam(value = "size", required = false) @Valid @Max(50) @Min(10) final Integer size
+            @RequestParam(value = "size", required = false) final Integer size
     ) {
         GetTasksResponse response = service.getTasksByStatus(new GetTasksRequest(status, order, page, size));
         return ResponseEntity

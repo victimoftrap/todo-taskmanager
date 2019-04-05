@@ -1,5 +1,6 @@
 package it.sevenbits.backend.taskmanager.web.service;
 
+import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.core.service.validation.IdValidationService;
@@ -8,9 +9,11 @@ import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
+
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service that validates ID from request and generates responses
@@ -18,6 +21,7 @@ import java.util.List;
 public class TaskControllerService implements TaskService {
     private final TaskRepository repository;
     private final IdValidationService idValidation = new IdValidationService();
+    private MetaDataSettings settings = new MetaDataSettings();
 
     /**
      * Create task controller service
@@ -57,7 +61,7 @@ public class TaskControllerService implements TaskService {
      * @param order  order for list
      * @param page   number of a page
      * @param size   size of a page
-     * @return
+     * @return URI
      */
     private String buildUriFor(final String status, final String order, final int page, final int size) {
         return UriComponentsBuilder
@@ -76,10 +80,13 @@ public class TaskControllerService implements TaskService {
 
     @Override
     public GetTasksResponse getTasksByStatus(final GetTasksRequest request) {
-        String status = request.getStatus();
-        String order = request.getOrder();
-        int page = request.getPage();
-        int size = request.getSize();
+        String status = Optional.ofNullable(request.getStatus()).orElse(settings.getStatus());
+        String order = Optional.ofNullable(request.getOrder()).orElse(settings.getOrder());
+        int page = Optional.ofNullable(request.getPage()).orElse(settings.getPage());
+        Integer size = request.getSize();
+        if (size == null || (size < settings.getMinPageSize() || size > settings.getMaxPageSize())) {
+            size = settings.getSize();
+        }
 
         List<Task> tasks = repository.getTasks(status, order, page, size);
 
