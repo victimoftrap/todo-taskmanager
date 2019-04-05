@@ -5,6 +5,7 @@ import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
+import it.sevenbits.backend.taskmanager.web.model.responses.UpdateTaskResponse;
 
 /**
  * Interface for work with tasks in server
@@ -22,7 +23,7 @@ public interface TaskService {
      * Get all user's tasks
      *
      * @param request request for getting tasks
-     * @return list with tasks or empty list
+     * @return response with tasks list
      */
     GetTasksResponse getTasksByStatus(GetTasksRequest request);
 
@@ -38,10 +39,10 @@ public interface TaskService {
      * Update task
      *
      * @param id      ID of a task
-     * @param request task with updated values
-     * @return updated task or null, if task doesn't exist
+     * @param request request for updating task
+     * @return response about task update
      */
-    Task updateTaskById(String id, UpdateTaskRequest request);
+    UpdateTaskResponse updateTaskById(String id, UpdateTaskRequest request);
 
     /**
      * Delete task

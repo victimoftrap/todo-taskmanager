@@ -10,6 +10,7 @@ import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 
+import it.sevenbits.backend.taskmanager.web.model.responses.UpdateTaskResponse;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
@@ -110,14 +111,14 @@ public class TaskControllerService implements TaskService {
     }
 
     @Override
-    public Task updateTaskById(final String id, final UpdateTaskRequest request) {
+    public UpdateTaskResponse updateTaskById(final String id, final UpdateTaskRequest request) {
         if (!idValidation.verify(id)) {
             return null;
         }
 
         Task oldTask = repository.getTask(id);
         if (oldTask == null) {
-            return new Task(null, null, null, null, null);
+            return new UpdateTaskResponse("");
         }
 
         String updText = updateTaskText(request, oldTask);
@@ -130,7 +131,7 @@ public class TaskControllerService implements TaskService {
                 oldTask.getUpdatedAt()
         );
         repository.updateTask(updated.getId(), updated);
-        return updated;
+        return new UpdateTaskResponse(id);
     }
 
     @Override

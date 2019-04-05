@@ -1,10 +1,10 @@
 package it.sevenbits.backend.taskmanager.web.controllers;
 
-import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
+import it.sevenbits.backend.taskmanager.web.model.responses.UpdateTaskResponse;
 import it.sevenbits.backend.taskmanager.web.service.TaskService;
 import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 
 import java.net.URI;
 
@@ -148,14 +146,14 @@ public class TaskController {
     @ResponseBody
     public ResponseEntity<Void> updateTask(@PathVariable("id") final String id,
                                            @RequestBody @Valid final UpdateTaskRequest request) {
-        Task task = service.updateTaskById(id, request);
-        if (task == null) {
+        UpdateTaskResponse response = service.updateTaskById(id, request);
+        if (response == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .build();
         }
-        if (task.getId() == null) {
+        if (response.getId().isEmpty()) {
             return ResponseEntity
                     .notFound()
                     .build();
