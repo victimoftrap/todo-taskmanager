@@ -3,6 +3,7 @@ package it.sevenbits.backend.taskmanager.web.service;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,15 +35,17 @@ public class TaskControllerServiceTest {
         assertEquals(mockTask, answer);
     }
 
-//    @Test
-//    public void testGetTasks() {
-//        List<Task> mockList = mock(List.class);
-//        when(mockTaskRepository.getTasks(anyString())).thenReturn(mockList);
-//
-//        List<Task> answer = taskService.getTasksByStatus(anyString());
-//        verify(mockTaskRepository, times(1)).getTasks(anyString());
-//        assertEquals(mockList, answer);
-//    }
+    @Test
+    public void testGetTasks() {
+        List<Task> mockList = mock(List.class);
+        GetTasksRequest request = new GetTasksRequest("inbox", "asc", 1, 15);
+        when(mockTaskRepository.getTasks(anyString(), anyString(), anyInt(), anyInt())).thenReturn(mockList);
+
+        List<Task> answer = taskService.getTasksByStatus(request).getTasks();
+        verify(mockTaskRepository, times(1))
+                .getTasks(anyString(), anyString(), anyInt(), anyInt());
+        assertEquals(mockList, answer);
+    }
 
     @Test
     public void testGetTaskById() {

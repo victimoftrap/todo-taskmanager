@@ -92,7 +92,7 @@ public class TaskController {
      */
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<?> getTasksByStatus(
+    public ResponseEntity<GetTasksResponse> getTasksByStatus(
             @RequestParam(value = "status", required = false) final String status,
             @RequestParam(value = "order", required = false) final String order,
             @RequestParam(value = "page", required = false) final Integer page,
