@@ -28,10 +28,13 @@ public interface TaskRepository {
     /**
      * Get all tasks by some status
      *
-     * @param status some task status
-     * @return list of a task
+     * @param status wanted task status
+     * @param order  wanted order of tasks
+     * @param page   page number
+     * @param size   size of a page
+     * @return list with tasks
      */
-    List<Task> getTasks(String status);
+    List<Task> getTasks(String status, String order, int page, int size);
 
     /**
      * Remove task from repository
@@ -48,4 +51,12 @@ public interface TaskRepository {
      * @param updated new task
      */
     void updateTask(String taskId, Task updated);
+
+    /**
+     * Get count of tasks with status
+     *
+     * @param status status of a tasks
+     * @return quantity of tasks
+     */
+    int getCountTasks(String status);
 }

@@ -2,10 +2,12 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
+import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
+import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 import it.sevenbits.backend.taskmanager.web.service.TaskService;
 import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
-import it.sevenbits.backend.taskmanager.web.model.AddTaskRequest;
-import it.sevenbits.backend.taskmanager.web.model.UpdateTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,9 +22,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import java.net.URI;
-import java.util.List;
 
 /**
  * Class-mediator that would return data from repository to user
@@ -80,18 +83,25 @@ public class TaskController {
      * Call service to get list of tasks by some status
      *
      * @param status status of needed tasks
-     * @return ResponseEntity with code of operation
+     * @param order  wanted order of tasks
+     * @param page   number of current page
+     * @param size   size of page with tasks
+     * @return list with tasks
      * * Code 200 - successful operation, all tasks returned
      */
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<Task>> getTasksByStatus(
-            @RequestParam(value = "status", required = false, defaultValue = "inbox") final String status) {
-        List<Task> tasks = service.getTasksByStatus(status);
+    public ResponseEntity<?> getTasksByStatus(
+            @RequestParam(value = "status", required = false, defaultValue = "inbox") final String status,
+            @RequestParam(value = "order", required = false, defaultValue = "desc") final String order,
+            @RequestParam(value = "page", required = false) final Integer page,
+            @RequestParam(value = "size", required = false) @Valid @Max(50) @Min(10) final Integer size
+    ) {
+        GetTasksResponse response = service.getTasksByStatus(new GetTasksRequest(status, order, page, size));
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(tasks);
+                .body(response);
     }
 
     /**

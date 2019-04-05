@@ -6,15 +6,16 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.*;
-import java.time.temporal.TemporalAccessor;
-import java.util.Date;
+import java.util.Optional;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.Instant;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * Implementation of task repository based on connection to database
@@ -48,7 +49,6 @@ public class DatabaseTaskRepository implements TaskRepository {
     @Override
     public Task createTask(final String text, final String status) {
         String id = UUID.randomUUID().toString();
-        // Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC()));
         Timestamp createTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
         jdbcOperations.update(
                 "INSERT INTO tasks VALUES(?,?,?,?,?)",
@@ -71,12 +71,22 @@ public class DatabaseTaskRepository implements TaskRepository {
     }
 
     @Override
-    public List<Task> getTasks(final String status) {
-        return jdbcOperations.query(
-                "SELECT id, text, status, createdAt, updatedAt FROM tasks WHERE status=?",
+    public List<Task> getTasks(final String status, final String order, final int page, final int size) {
+        String ascQuery =
+                "SELECT id,text,status,createdAt,updatedAt FROM tasks WHERE status=? ORDER BY createdAt ASC OFFSET ? LIMIT ?";
+        String descQuery =
+                "SELECT id,text,status,createdAt,updatedAt FROM tasks WHERE status=? ORDER BY createdAt DESC OFFSET ? LIMIT ?";
+        String query = "asc".equalsIgnoreCase(order) ? ascQuery : descQuery;
+        int offset = (page - 1) * size;
+
+        List<Task> result = jdbcOperations.query(
+                query,
                 taskMapper,
-                status
+                status,
+                offset,
+                size
         );
+        return Collections.unmodifiableList(result);
     }
 
     @Override
@@ -91,11 +101,22 @@ public class DatabaseTaskRepository implements TaskRepository {
 
     @Override
     public void updateTask(final String taskId, final Task updated) {
-        // Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now(Clock.systemUTC()));
         Timestamp createTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
         jdbcOperations.update(
                 "UPDATE tasks SET text=?, status=?, updatedAt=? WHERE id=?",
                 updated.getText(), updated.getStatus(), createTimestamp, taskId
         );
+    }
+
+    @Override
+    public int getCountTasks(final String status) {
+        Integer count = jdbcOperations.queryForObject(
+                "SELECT COUNT(*) FROM tasks WHERE status=?",
+                (resultSet, i) -> resultSet.getInt(1),
+                status
+        );
+        return Optional
+                .ofNullable(count)
+                .orElse(0);
     }
 }

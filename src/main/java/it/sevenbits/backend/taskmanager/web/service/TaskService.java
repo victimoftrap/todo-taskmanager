@@ -1,10 +1,10 @@
 package it.sevenbits.backend.taskmanager.web.service;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
-import it.sevenbits.backend.taskmanager.web.model.AddTaskRequest;
-import it.sevenbits.backend.taskmanager.web.model.UpdateTaskRequest;
-
-import java.util.List;
+import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
+import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
+import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 
 /**
  * Interface for work with tasks in server
@@ -21,10 +21,10 @@ public interface TaskService {
     /**
      * Get all user's tasks
      *
-     * @param status status of needed tasks
+     * @param request request for getting tasks
      * @return list with tasks or empty list
      */
-    List<Task> getTasksByStatus(String status);
+    GetTasksResponse getTasksByStatus(GetTasksRequest request);
 
     /**
      * Get task by his ID

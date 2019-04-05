@@ -1,5 +1,6 @@
 package it.sevenbits.backend.taskmanager.web.model;
 
+import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

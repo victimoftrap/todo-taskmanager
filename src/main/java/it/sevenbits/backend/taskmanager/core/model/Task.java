@@ -36,7 +36,8 @@ public class Task {
      * @param id        ID of a task
      * @param text      description of a task
      * @param status    status of a task
-     * @param createdAt creation date of a task
+     * @param createdAt date/time of task creation
+     * @param updatedAt date/time of task update
      */
     @JsonCreator
     public Task(@JsonProperty("id") final String id,
