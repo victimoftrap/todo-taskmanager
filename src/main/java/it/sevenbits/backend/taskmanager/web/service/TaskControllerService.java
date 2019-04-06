@@ -3,7 +3,10 @@ package it.sevenbits.backend.taskmanager.web.service;
 import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
-import it.sevenbits.backend.taskmanager.core.service.validation.IdValidationService;
+import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.SortingOrderValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.StatusValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
 import it.sevenbits.backend.taskmanager.web.model.meta.GetTasksMetaData;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
@@ -21,7 +24,9 @@ import java.util.Optional;
  */
 public class TaskControllerService implements TaskService {
     private final TaskRepository repository;
-    private final IdValidationService idValidation = new IdValidationService();
+    private final Verifiable<String> idValidation = new IdValidator();
+    private final Verifiable<String> statusValidator = new StatusValidator();
+    private final Verifiable<String> orderValidator = new SortingOrderValidator();
     private MetaDataSettings settings = new MetaDataSettings();
 
     /**
@@ -41,7 +46,9 @@ public class TaskControllerService implements TaskService {
      * @return new text for task
      */
     private String updateTaskText(final UpdateTaskRequest upd, final Task old) {
-        return upd.getText() == null ? old.getText() : upd.getText();
+        return upd.getText() == null
+                ? old.getText()
+                : upd.getText();
     }
 
     /**
@@ -52,7 +59,9 @@ public class TaskControllerService implements TaskService {
      * @return new status for task
      */
     private String updateTaskStatus(final UpdateTaskRequest upd, final Task old) {
-        return upd.getStatus() == null ? old.getStatus() : upd.getStatus();
+        return upd.getStatus() == null
+                ? old.getStatus()
+                : upd.getStatus();
     }
 
     /**
@@ -81,23 +90,37 @@ public class TaskControllerService implements TaskService {
 
     @Override
     public GetTasksResponse getTasksByStatus(final GetTasksRequest request) {
-        String status = Optional.ofNullable(request.getStatus()).orElse(settings.getStatus());
-        String order = Optional.ofNullable(request.getOrder()).orElse(settings.getOrder());
-        int page = Optional.ofNullable(request.getPage()).orElse(settings.getPage());
+        String status = statusValidator.verify(request.getStatus())
+                ? request.getStatus()
+                : settings.getStatus();
+        String order = orderValidator.verify(request.getOrder())
+                ? request.getOrder()
+                : settings.getOrder();
+
         Integer size = request.getSize();
         if (size == null || (size < settings.getMinPageSize() || size > settings.getMaxPageSize())) {
             size = settings.getSize();
         }
 
-        List<Task> tasks = repository.getTasks(status, order, page, size);
-
         int totalCount = repository.getCountTasks(status);
         int pagesCount = (int) Math.ceil((double) totalCount / size);
 
+        Integer page = request.getPage();
+        if (page == null || page < settings.getPage()) {
+            page = settings.getPage();
+        } else if (page > pagesCount) {
+            page = pagesCount;
+        }
+
+        List<Task> tasks = repository.getTasks(status, order, page, size);
         String firstPage = buildUriFor(status, order, 1, size);
         String lastPage = buildUriFor(status, order, pagesCount, size);
-        String nextPage = page == pagesCount ? "" : buildUriFor(status, order, page + 1, size);
-        String prevPage = page == 1 ? "" : buildUriFor(status, order, page - 1, size);
+        String nextPage = page == pagesCount
+                ? ""
+                : buildUriFor(status, order, page + 1, size);
+        String prevPage = page == 1
+                ? ""
+                : buildUriFor(status, order, page - 1, size);
         GetTasksMetaData meta = new GetTasksMetaData(totalCount, page, size, nextPage, prevPage, firstPage, lastPage);
         return new GetTasksResponse(meta, tasks);
     }
