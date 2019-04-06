@@ -9,7 +9,6 @@ import java.util.List;
  */
 public class SortingOrderValidator implements Verifiable<String> {
     private List<String> orders;
-    private boolean result;
 
     /**
      * Create validator
@@ -20,7 +19,7 @@ public class SortingOrderValidator implements Verifiable<String> {
     }
 
     @Override
-    public boolean verify(String param) {
+    public boolean verify(final String param) {
         if (param == null) {
             return false;
         }

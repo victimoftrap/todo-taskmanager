@@ -17,7 +17,6 @@ import it.sevenbits.backend.taskmanager.web.model.responses.UpdateTaskResponse;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service that validates ID from request and generates responses
@@ -27,7 +26,7 @@ public class TaskControllerService implements TaskService {
     private final Verifiable<String> idValidation = new IdValidator();
     private final Verifiable<String> statusValidator = new StatusValidator();
     private final Verifiable<String> orderValidator = new SortingOrderValidator();
-    private MetaDataSettings settings = new MetaDataSettings();
+    private final MetaDataSettings settings = new MetaDataSettings();
 
     /**
      * Create task controller service
