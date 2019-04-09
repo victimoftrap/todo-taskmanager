@@ -23,18 +23,20 @@ import java.util.List;
  */
 public class TaskControllerService implements TaskService {
     private final TaskRepository repository;
+    private final MetaDataSettings settings;
     private final Verifiable<String> idValidation = new IdValidator();
     private final Verifiable<String> statusValidator = new StatusValidator();
     private final Verifiable<String> orderValidator = new SortingOrderValidator();
-    private final MetaDataSettings settings = new MetaDataSettings();
 
     /**
      * Create task controller service
      *
      * @param repository object, that works with database
+     * @param settings   default settings for service
      */
-    public TaskControllerService(final TaskRepository repository) {
+    public TaskControllerService(final TaskRepository repository, final MetaDataSettings settings) {
         this.repository = repository;
+        this.settings = settings;
     }
 
     /**
@@ -64,6 +66,19 @@ public class TaskControllerService implements TaskService {
     }
 
     /**
+     * Choose parameter for receiving tasks
+     *
+     * @param verifiable validator of requested value
+     * @param received   requested value
+     * @param preset     default value from settings
+     * @param <T>        some type
+     * @return chosen param
+     */
+    private <T> T choosePaginationSetting(final Verifiable<T> verifiable, final T received, final T preset) {
+        return verifiable.verify(received) ? received : preset;
+    }
+
+    /**
      * Build URI for task list page
      *
      * @param status status of a tasks
@@ -89,12 +104,8 @@ public class TaskControllerService implements TaskService {
 
     @Override
     public GetTasksResponse getTasksByStatus(final GetTasksRequest request) {
-        String status = statusValidator.verify(request.getStatus())
-                ? request.getStatus()
-                : settings.getStatus();
-        String order = orderValidator.verify(request.getOrder())
-                ? request.getOrder()
-                : settings.getOrder();
+        String status = choosePaginationSetting(statusValidator, request.getStatus(), settings.getStatus());
+        String order = choosePaginationSetting(orderValidator, request.getOrder(), settings.getOrder());
 
         Integer size = request.getSize();
         if (size == null || (size < settings.getMinPageSize() || size > settings.getMaxPageSize())) {
@@ -102,7 +113,7 @@ public class TaskControllerService implements TaskService {
         }
 
         int totalCount = repository.getCountTasks(status);
-        int pagesCount = (int) Math.ceil((double) totalCount / size);
+        int pagesCount = Math.max((int) Math.ceil((double) totalCount / size), 1);
 
         Integer page = request.getPage();
         if (page == null || page < settings.getPage()) {
@@ -112,6 +123,7 @@ public class TaskControllerService implements TaskService {
         }
 
         List<Task> tasks = repository.getTasks(status, order, page, size);
+
         String firstPage = buildUriFor(status, order, 1, size);
         String lastPage = buildUriFor(status, order, pagesCount, size);
         String nextPage = page == pagesCount

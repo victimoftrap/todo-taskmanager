@@ -20,11 +20,11 @@ public class TaskControllerTest {
     private TaskRepository mockTaskRepository;
     private TaskController taskController;
 
-    @Before
-    public void setup() {
-        mockTaskRepository = mock(TaskRepository.class);
-        taskController = new TaskController(mockTaskRepository);
-    }
+//    @Before
+//    public void setup() {
+//        mockTaskRepository = mock(TaskRepository.class);
+//        taskController = new TaskController(mockTaskRepository);
+//    }
 
     // 201
     @Test

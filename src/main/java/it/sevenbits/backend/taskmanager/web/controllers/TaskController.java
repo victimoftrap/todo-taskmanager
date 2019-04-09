@@ -1,12 +1,10 @@
 package it.sevenbits.backend.taskmanager.web.controllers;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
-import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 import it.sevenbits.backend.taskmanager.web.model.responses.UpdateTaskResponse;
 import it.sevenbits.backend.taskmanager.web.service.TaskService;
-import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 
@@ -35,12 +33,12 @@ public class TaskController {
     private final TaskService service;
 
     /**
-     * Create controller by some repository
+     * Create controller by his service
      *
-     * @param repository repository for tasks
+     * @param service service for tasks controller
      */
-    public TaskController(final TaskRepository repository) {
-        this.service = new TaskControllerService(repository);
+    public TaskController(final TaskService service) {
+        this.service = service;
     }
 
     /**

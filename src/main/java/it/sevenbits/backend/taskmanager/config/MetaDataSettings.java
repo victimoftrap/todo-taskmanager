@@ -1,15 +1,32 @@
 package it.sevenbits.backend.taskmanager.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+
 /**
  * Class with default metadata settings
  */
+@Component
+@PropertySource("classpath:configuration.properties")
 public class MetaDataSettings {
-    private final String status = "inbox";
-    private final String order = "desc";
-    private final int page = 1;
-    private final int pageSize = 25;
-    private final int minPageSize = 10;
-    private final int maxPageSize = 50;
+    @Value("${default.status}")
+    private String status = null;
+
+    @Value("${default.order}")
+    private String order = null;
+
+    @Value("${default.start-page}")
+    private Integer page = null;
+
+    @Value("${default.page-size}")
+    private Integer pageSize = null;
+
+    @Value("${default.min-page-size}")
+    private Integer minPageSize = null;
+
+    @Value("${default.max-page-size}")
+    private Integer maxPageSize = null;
 
     /**
      * Get default status of tasks
