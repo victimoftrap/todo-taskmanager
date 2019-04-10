@@ -1,5 +1,6 @@
 package it.sevenbits.backend.taskmanager.web.service;
 
+import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
@@ -17,12 +18,14 @@ import static org.mockito.Mockito.*;
 public class TaskControllerServiceTest {
     private TaskRepository mockTaskRepository;
     private TaskService taskService;
+    private MetaDataSettings mockSettings;
 
-//    @Before
-//    public void setup() {
-//        mockTaskRepository = mock(TaskRepository.class);
-//        taskService = new TaskControllerService(mockTaskRepository);
-//    }
+    @Before
+    public void setup() {
+        mockTaskRepository = mock(TaskRepository.class);
+        mockSettings = mock(MetaDataSettings.class);
+        taskService = new TaskControllerService(mockTaskRepository, mockSettings);
+    }
 
     @Test
     public void testTaskCreated() {

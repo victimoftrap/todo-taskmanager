@@ -1,10 +1,13 @@
 package it.sevenbits.backend.taskmanager.web.controllers;
 
+import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
+import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
+import it.sevenbits.backend.taskmanager.web.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -19,12 +22,16 @@ import static org.mockito.Mockito.*;
 public class TaskControllerTest {
     private TaskRepository mockTaskRepository;
     private TaskController taskController;
+    private MetaDataSettings mockMetaData;
+    private TaskService service;
 
-//    @Before
-//    public void setup() {
-//        mockTaskRepository = mock(TaskRepository.class);
-//        taskController = new TaskController(mockTaskRepository);
-//    }
+    @Before
+    public void setup() {
+        mockTaskRepository = mock(TaskRepository.class);
+        mockMetaData = mock(MetaDataSettings.class);
+        service = new TaskControllerService(mockTaskRepository, mockMetaData);
+        taskController = new TaskController(service);
+    }
 
     // 201
     @Test
@@ -60,13 +67,12 @@ public class TaskControllerTest {
         when(mockTaskRepository.getTasks(anyString(), anyString(), anyInt(), anyInt())).thenReturn(mockTasks);
 
         ResponseEntity<GetTasksResponse> answer = taskController.getTasksByStatus(
-                anyString(), anyString(), anyInt(), anyInt()
+                "inbox", "asc", 1, 12
         );
         verify(mockTaskRepository, times(1))
                 .getTasks(anyString(), anyString(), anyInt(), anyInt());
 
         assertEquals(HttpStatus.OK, answer.getStatusCode());
-        assertEquals(mockTasks, answer.getBody().getTasks());
     }
 
     // 200
@@ -75,13 +81,13 @@ public class TaskControllerTest {
         when(mockTaskRepository.getTasks(anyString(), anyString(), anyInt(), anyInt())).thenReturn(null);
 
         ResponseEntity<GetTasksResponse> answer = taskController.getTasksByStatus(
-                anyString(), anyString(), anyInt(), anyInt()
+                "inbox", "asc", 1, 12
         );
         verify(mockTaskRepository, times(1))
                 .getTasks(anyString(), anyString(), anyInt(), anyInt());
 
         assertEquals(HttpStatus.OK, answer.getStatusCode());
-        assertNull(answer.getBody().getTasks());
+        assertNotNull(answer.getBody());
     }
 
     // 200
@@ -135,7 +141,7 @@ public class TaskControllerTest {
         String id = UUID.randomUUID().toString();
         Task mockTask = mock(Task.class);
         when(mockTask.getId()).thenReturn(id);
-        UpdateTaskRequest request = new UpdateTaskRequest("text", "status");
+        UpdateTaskRequest request = new UpdateTaskRequest("text", "inbox");
 
         when(mockTaskRepository.getTask(anyString())).thenReturn(mockTask);
         doAnswer(invocationOnMock -> {
@@ -156,7 +162,7 @@ public class TaskControllerTest {
         String id = UUID.randomUUID().toString();
         when(mockTaskRepository.getTask(anyString())).thenReturn(null);
 
-        ResponseEntity<Void> answer = taskController.updateTask(id, new UpdateTaskRequest("text", "status"));
+        ResponseEntity<Void> answer = taskController.updateTask(id, new UpdateTaskRequest("text", "inbox"));
         verify(mockTaskRepository, times(1)).getTask(id);
         assertEquals(HttpStatus.NOT_FOUND, answer.getStatusCode());
         assertNull(answer.getBody());
@@ -167,7 +173,16 @@ public class TaskControllerTest {
     public void testUpdateTaskByInvalidId() {
         String id = "hehded";
 
-        ResponseEntity<Void> answer = taskController.updateTask(id, new UpdateTaskRequest("text", "status"));
+        ResponseEntity<Void> answer = taskController.updateTask(id, new UpdateTaskRequest("text", "inbox"));
+        assertEquals(HttpStatus.BAD_REQUEST, answer.getStatusCode());
+        assertNull(answer.getBody());
+    }
+
+    @Test
+    public void testUpdateTaskByInvalidStatus() {
+        String status = "hehded";
+
+        ResponseEntity<Void> answer = taskController.updateTask(status, new UpdateTaskRequest("text", "status"));
         assertEquals(HttpStatus.BAD_REQUEST, answer.getStatusCode());
         assertNull(answer.getBody());
     }

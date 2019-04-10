@@ -12,7 +12,6 @@ import java.util.Objects;
 public class UpdateTaskRequest {
     private String text;
 
-    @SupportedStatus
     private String status;
 
     /**

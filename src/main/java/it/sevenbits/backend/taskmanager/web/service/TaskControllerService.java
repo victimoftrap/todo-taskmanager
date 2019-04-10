@@ -79,6 +79,40 @@ public class TaskControllerService implements TaskService {
     }
 
     /**
+     * Choose page size
+     *
+     * @param received requested page size
+     * @param preset   default page size
+     * @param minSize  maximum page size
+     * @param maxSize  maximum page size
+     * @return chosen size
+     */
+    private int choosePageSize(final Integer received, final Integer preset, final int minSize, final int maxSize) {
+        if (received == null || (received < minSize || received > maxSize)) {
+            return preset;
+        }
+        return received;
+    }
+
+    /**
+     * Choose current page number
+     *
+     * @param received   requested page number
+     * @param preset     default page number
+     * @param pagesCount total pages, count by page size
+     * @return chosen page number
+     */
+    private int choosePageNumber(final Integer received, final Integer preset, final int pagesCount) {
+        if (received == null || received < preset) {
+            return preset;
+        } else if (received > pagesCount) {
+            return pagesCount;
+        } else {
+            return received;
+        }
+    }
+
+    /**
      * Build URI for task list page
      *
      * @param status status of a tasks
@@ -106,21 +140,12 @@ public class TaskControllerService implements TaskService {
     public GetTasksResponse getTasksByStatus(final GetTasksRequest request) {
         String status = choosePaginationSetting(statusValidator, request.getStatus(), settings.getStatus());
         String order = choosePaginationSetting(orderValidator, request.getOrder(), settings.getOrder());
-
-        Integer size = request.getSize();
-        if (size == null || (size < settings.getMinPageSize() || size > settings.getMaxPageSize())) {
-            size = settings.getSize();
-        }
+        int size = choosePageSize(request.getSize(), settings.getPage(),
+                settings.getMinPageSize(), settings.getMaxPageSize());
 
         int totalCount = repository.getCountTasks(status);
         int pagesCount = Math.max((int) Math.ceil((double) totalCount / size), 1);
-
-        Integer page = request.getPage();
-        if (page == null || page < settings.getPage()) {
-            page = settings.getPage();
-        } else if (page > pagesCount) {
-            page = pagesCount;
-        }
+        int page = choosePageNumber(request.getPage(), settings.getPage(), pagesCount);
 
         List<Task> tasks = repository.getTasks(status, order, page, size);
 
@@ -147,6 +172,9 @@ public class TaskControllerService implements TaskService {
     @Override
     public UpdateTaskResponse updateTaskById(final String id, final UpdateTaskRequest request) {
         if (!idValidation.verify(id)) {
+            return null;
+        }
+        if (request.getStatus() != null && !statusValidator.verify(request.getStatus())) {
             return null;
         }
 

@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * Class that handles exceptions from service
  */
 @ControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class TaskServiceExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Handle exception about a non-integer value of page/size
      *
