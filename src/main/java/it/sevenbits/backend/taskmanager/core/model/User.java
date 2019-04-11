@@ -1,6 +1,7 @@
 package it.sevenbits.backend.taskmanager.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.sevenbits.backend.taskmanager.core.service.validation.annotations.id.ValidID;
 
@@ -21,6 +22,10 @@ public class User {
     @JsonProperty("username")
     private final String username;
 
+    @NotBlank
+    @JsonIgnore
+    private final String password;
+
     @NotNull
     @JsonProperty("authorities")
     private final List<String> authorities;
@@ -30,14 +35,17 @@ public class User {
      *
      * @param id          ID of the user
      * @param username    name of the user
+     * @param password    password of the user
      * @param authorities user's authorities
      */
     @JsonCreator
     public User(final String id,
                 final String username,
+                final String password,
                 final List<String> authorities) {
         this.id = id;
         this.username = username;
+        this.password = password;
         this.authorities = authorities;
     }
 
@@ -60,6 +68,15 @@ public class User {
     }
 
     /**
+     * Get password of the user
+     *
+     * @return password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
      * Get user's authorities
      *
      * @return authorities
@@ -79,11 +96,12 @@ public class User {
         User user = (User) o;
         return Objects.equals(id, user.id) &&
                 Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password) &&
                 Objects.equals(authorities, user.authorities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, authorities);
+        return Objects.hash(id, username, password, authorities);
     }
 }

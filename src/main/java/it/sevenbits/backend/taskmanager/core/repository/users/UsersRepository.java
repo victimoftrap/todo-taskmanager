@@ -9,12 +9,12 @@ import java.util.List;
  */
 public interface UsersRepository {
     /**
-     * Find user by his name (login)
+     * Find user by his ID
      *
-     * @param login name of the user
+     * @param id ID of the user
      * @return user
      */
-    User findUserByName(String login);
+    User findUserById(String id);
 
     /**
      * Get all users
