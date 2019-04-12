@@ -1,4 +1,4 @@
-package it.sevenbits.backend.taskmanager.core.repository;
+package it.sevenbits.backend.taskmanager.core.repository.tasks;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
 

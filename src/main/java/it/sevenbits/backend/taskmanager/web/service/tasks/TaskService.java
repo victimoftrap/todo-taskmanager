@@ -1,4 +1,4 @@
-package it.sevenbits.backend.taskmanager.web.service;
+package it.sevenbits.backend.taskmanager.web.service.tasks;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;

@@ -2,9 +2,14 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 
 import it.sevenbits.backend.taskmanager.core.model.User;
 import it.sevenbits.backend.taskmanager.web.service.users.UsersService;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * Class-mediator that would return data from users service to user with special authorities
@@ -12,15 +17,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/users")
 public class UsersController {
-    private final UsersService service;
+    private final UsersService usersService;
 
     /**
      * Create users controller by users service
      *
-     * @param service service that validates requests
+     * @param usersService service that validates requests
      */
-    public UsersController(final UsersService service) {
-        this.service = service;
+    public UsersController(final UsersService usersService) {
+        this.usersService = usersService;
     }
 
     /**
@@ -32,7 +37,7 @@ public class UsersController {
     @GetMapping(value = "/{id}")
     @ResponseBody
     public ResponseEntity<User> getUserById(@PathVariable(value = "id") final String id) {
-        User user = service.getUserById(id);
+        User user = usersService.getUserById(id);
         if (user == null) {
             return ResponseEntity
                     .notFound()

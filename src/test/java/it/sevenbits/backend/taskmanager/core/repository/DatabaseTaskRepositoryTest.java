@@ -1,6 +1,8 @@
 package it.sevenbits.backend.taskmanager.core.repository;
 
 import it.sevenbits.backend.taskmanager.core.model.Task;
+import it.sevenbits.backend.taskmanager.core.repository.tasks.DatabaseTaskRepository;
+import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -8,7 +10,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;

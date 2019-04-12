@@ -4,7 +4,7 @@ import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 import it.sevenbits.backend.taskmanager.web.model.responses.UpdateTaskResponse;
-import it.sevenbits.backend.taskmanager.web.service.TaskService;
+import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 

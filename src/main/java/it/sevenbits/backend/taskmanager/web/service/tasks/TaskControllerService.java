@@ -1,8 +1,8 @@
-package it.sevenbits.backend.taskmanager.web.service;
+package it.sevenbits.backend.taskmanager.web.service.tasks;
 
 import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
-import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
+import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
 import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
 import it.sevenbits.backend.taskmanager.core.service.validation.SortingOrderValidator;
 import it.sevenbits.backend.taskmanager.core.service.validation.StatusValidator;
@@ -12,8 +12,8 @@ import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
-
 import it.sevenbits.backend.taskmanager.web.model.responses.UpdateTaskResponse;
+
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;

@@ -17,6 +17,14 @@ public interface UsersRepository {
     User findUserById(String id);
 
     /**
+     * Find user by his name
+     *
+     * @param username name of the user
+     * @return user
+     */
+    User findUserByName(String username);
+
+    /**
      * Get all users
      *
      * @return list with users

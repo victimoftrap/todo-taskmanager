@@ -2,7 +2,6 @@ package it.sevenbits.backend.taskmanager.web.model.requests;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.sevenbits.backend.taskmanager.core.service.validation.annotations.status.SupportedStatus;
 
 import java.util.Objects;
 

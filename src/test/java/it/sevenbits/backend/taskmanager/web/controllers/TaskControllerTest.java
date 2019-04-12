@@ -2,12 +2,12 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 
 import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
-import it.sevenbits.backend.taskmanager.core.repository.TaskRepository;
+import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
-import it.sevenbits.backend.taskmanager.web.service.TaskControllerService;
-import it.sevenbits.backend.taskmanager.web.service.TaskService;
+import it.sevenbits.backend.taskmanager.web.service.tasks.TaskControllerService;
+import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
