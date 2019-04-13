@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 /**
  * Class-mediator that would return data from users service to user with special authorities
  */
@@ -43,10 +45,18 @@ public class UsersController {
                     .notFound()
                     .build();
         }
-        // TODO check authorities (ADMIN required)
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(user);
+    }
+
+    @GetMapping
+    @ResponseBody
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(usersService.getAllUsers());
     }
 }

@@ -2,8 +2,10 @@ package it.sevenbits.backend.taskmanager.web.service.users;
 
 import it.sevenbits.backend.taskmanager.core.model.User;
 import it.sevenbits.backend.taskmanager.core.repository.users.UsersRepository;
-import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
 import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
+import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
+
+import java.util.List;
 
 /**
  * Service that validates requests to part of database with users and generates responses
@@ -26,7 +28,19 @@ public class WebUsersService implements UsersService {
         if (id == null || !idValidator.verify(id)) {
             return null;
         }
-        // TODO check authorities (ADMIN required)
         return repository.findUserById(id);
+    }
+
+    @Override
+    public User getUserByName(final String name) {
+        if (name == null) {
+            return null;
+        }
+        return repository.findUserByName(name);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return repository.findAll();
     }
 }
