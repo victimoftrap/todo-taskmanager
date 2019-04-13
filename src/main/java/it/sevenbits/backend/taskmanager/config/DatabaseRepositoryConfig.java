@@ -23,6 +23,7 @@ public class DatabaseRepositoryConfig {
      * @return repository with tasks
      */
     @Bean
+    @Qualifier("tasksRepository")
     public TaskRepository tasksRepository(
             @Qualifier("tasksJdbcOperations") final JdbcOperations jdbcOperations) {
         return new DatabaseTaskRepository(jdbcOperations);
@@ -35,6 +36,7 @@ public class DatabaseRepositoryConfig {
      * @return repository with users
      */
     @Bean
+    @Qualifier("usersRepository")
     public UsersRepository usersRepository(
             @Qualifier(value = "tasksJdbcOperations") final JdbcOperations jdbcOperations) {
         return new DatabaseUsersRepository(jdbcOperations);

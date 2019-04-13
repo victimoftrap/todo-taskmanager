@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
+
 /**
  * Controller for handling sign in requests
  */
@@ -23,18 +25,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/signin")
 public class SignInController {
     private final SignInService signInService;
-    private final JwtTokenService tokenService;
+    private final JwtTokenService jwtTokenService;
 
     /**
      * Create controller for signing in user
      *
-     * @param signInService service that verifying requests
-     * @param tokenService  service that works with user tokens
+     * @param signInService   service that verifying requests
+     * @param jwtTokenService service that works with user tokens
      */
     public SignInController(final SignInService signInService,
-                            @Qualifier(value = "jwtTokenService") final JwtTokenService tokenService) {
+                            final JwtTokenService jwtTokenService) {
         this.signInService = signInService;
-        this.tokenService = tokenService;
+        this.jwtTokenService = jwtTokenService;
     }
 
     /**
@@ -51,14 +53,14 @@ public class SignInController {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<SignInResponse> createSession(@RequestBody final SignInRequest request) {
+    public ResponseEntity<SignInResponse> createSession(@RequestBody @Valid final SignInRequest request) {
         User user = signInService.signIn(request);
         if (user == null) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build();
         }
-        String token = tokenService.createToken(user);
+        String token = jwtTokenService.createToken(user);
         return ResponseEntity
                 .ok()
                 .body(new SignInResponse(token));

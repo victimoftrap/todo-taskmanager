@@ -3,7 +3,6 @@ package it.sevenbits.backend.taskmanager.web.service.users;
 import it.sevenbits.backend.taskmanager.core.model.User;
 import it.sevenbits.backend.taskmanager.core.repository.users.UsersRepository;
 import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
-import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
 
 import java.util.List;
 
@@ -12,15 +11,17 @@ import java.util.List;
  */
 public class WebUsersService implements UsersService {
     private final UsersRepository repository;
-    private final Verifiable<String> idValidator = new IdValidator();
+    private final Verifiable<String> idValidator;
 
     /**
      * Create service that validates requests and calls DAO
      *
-     * @param repository DAO, connected to database
+     * @param repository  DAO, connected to database
+     * @param idValidator validator of received ID
      */
-    public WebUsersService(final UsersRepository repository) {
+    public WebUsersService(final UsersRepository repository, final Verifiable<String> idValidator) {
         this.repository = repository;
+        this.idValidator = idValidator;
     }
 
     @Override

@@ -3,11 +3,15 @@ package it.sevenbits.backend.taskmanager.web.controllers;
 import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
+import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.SortingOrderValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.StatusValidator;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.GetTasksResponse;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -29,7 +33,13 @@ public class TaskControllerTest {
     public void setup() {
         mockTaskRepository = mock(TaskRepository.class);
         mockMetaData = mock(MetaDataSettings.class);
-        service = new TaskControllerService(mockTaskRepository, mockMetaData);
+        service = new TaskControllerService(
+                mockTaskRepository,
+                new IdValidator(),
+                new StatusValidator(),
+                new SortingOrderValidator(),
+                mockMetaData
+        );
         taskController = new TaskController(service);
     }
 

@@ -15,7 +15,7 @@ import javax.sql.DataSource;
  * Configuration for connection to database
  */
 @Configuration
-public class TasksDatabaseConfig {
+public class DatabaseConnectionConfig {
     /**
      * Get connection pool wrapper for database
      *

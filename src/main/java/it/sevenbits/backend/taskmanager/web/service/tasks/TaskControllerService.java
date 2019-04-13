@@ -3,9 +3,6 @@ package it.sevenbits.backend.taskmanager.web.service.tasks;
 import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
-import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
-import it.sevenbits.backend.taskmanager.core.service.validation.SortingOrderValidator;
-import it.sevenbits.backend.taskmanager.core.service.validation.StatusValidator;
 import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
 import it.sevenbits.backend.taskmanager.web.model.meta.GetTasksMetaData;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
@@ -24,18 +21,30 @@ import java.util.List;
 public class TaskControllerService implements TaskService {
     private final TaskRepository repository;
     private final MetaDataSettings settings;
-    private final Verifiable<String> idValidation = new IdValidator();
-    private final Verifiable<String> statusValidator = new StatusValidator();
-    private final Verifiable<String> orderValidator = new SortingOrderValidator();
+    private final Verifiable<String> idValidator;
+    private final Verifiable<String> statusValidator;
+    private final Verifiable<String> sortingOrderValidator;
 
     /**
      * Create task controller service
      *
-     * @param repository object, that works with database
-     * @param settings   default settings for service
+     * @param repository            object, that works with database
+     * @param idValidator           task ID validator
+     * @param statusValidator       task status validator
+     * @param sortingOrderValidator sorting order for tasks in list validator
+     * @param settings              default settings for service
      */
-    public TaskControllerService(final TaskRepository repository, final MetaDataSettings settings) {
+    public TaskControllerService(
+            final TaskRepository repository,
+            final Verifiable<String> idValidator,
+            final Verifiable<String> statusValidator,
+            final Verifiable<String> sortingOrderValidator,
+            final MetaDataSettings settings) {
+
         this.repository = repository;
+        this.idValidator = idValidator;
+        this.statusValidator = statusValidator;
+        this.sortingOrderValidator = sortingOrderValidator;
         this.settings = settings;
     }
 
@@ -139,8 +148,8 @@ public class TaskControllerService implements TaskService {
     @Override
     public GetTasksResponse getTasksByStatus(final GetTasksRequest request) {
         String status = choosePaginationSetting(statusValidator, request.getStatus(), settings.getStatus());
-        String order = choosePaginationSetting(orderValidator, request.getOrder(), settings.getOrder());
-        int size = choosePageSize(request.getSize(), settings.getPage(),
+        String order = choosePaginationSetting(sortingOrderValidator, request.getOrder(), settings.getOrder());
+        int size = choosePageSize(request.getSize(), settings.getSize(),
                 settings.getMinPageSize(), settings.getMaxPageSize());
 
         int totalCount = repository.getCountTasks(status);
@@ -163,7 +172,7 @@ public class TaskControllerService implements TaskService {
 
     @Override
     public Task getTaskById(final String id) {
-        if (!idValidation.verify(id)) {
+        if (!idValidator.verify(id)) {
             return null;
         }
         return repository.getTask(id);
@@ -171,7 +180,7 @@ public class TaskControllerService implements TaskService {
 
     @Override
     public UpdateTaskResponse updateTaskById(final String id, final UpdateTaskRequest request) {
-        if (!idValidation.verify(id)) {
+        if (!idValidator.verify(id)) {
             return null;
         }
         if (request.getStatus() != null && !statusValidator.verify(request.getStatus())) {
@@ -198,7 +207,7 @@ public class TaskControllerService implements TaskService {
 
     @Override
     public Task removeTaskById(final String id) {
-        if (!idValidation.verify(id)) {
+        if (!idValidator.verify(id)) {
             return null;
         }
         return repository.removeTask(id);

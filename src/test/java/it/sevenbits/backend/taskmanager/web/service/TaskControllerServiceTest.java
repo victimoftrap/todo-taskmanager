@@ -3,10 +3,14 @@ package it.sevenbits.backend.taskmanager.web.service;
 import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
+import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.SortingOrderValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.StatusValidator;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.GetTasksRequest;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,7 +30,13 @@ public class TaskControllerServiceTest {
     public void setup() {
         mockTaskRepository = mock(TaskRepository.class);
         mockSettings = mock(MetaDataSettings.class);
-        taskService = new TaskControllerService(mockTaskRepository, mockSettings);
+        taskService = new TaskControllerService(
+                mockTaskRepository,
+                new IdValidator(),
+                new StatusValidator(),
+                new SortingOrderValidator(),
+                mockSettings
+        );
     }
 
     @Test
