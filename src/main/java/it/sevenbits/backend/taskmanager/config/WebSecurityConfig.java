@@ -1,8 +1,8 @@
 package it.sevenbits.backend.taskmanager.config;
 
-import it.sevenbits.backend.taskmanager.web.security.authentication.JwtAuthenticationProvider;
-import it.sevenbits.backend.taskmanager.web.security.authentication.filter.HeaderJwtAuthFilter;
-import it.sevenbits.backend.taskmanager.web.security.authentication.filter.JwtAuthFilter;
+import it.sevenbits.backend.taskmanager.web.security.provider.JwtAuthenticationProvider;
+import it.sevenbits.backend.taskmanager.web.security.filter.HeaderJwtAuthFilter;
+import it.sevenbits.backend.taskmanager.web.security.filter.JwtAuthFilter;
 import it.sevenbits.backend.taskmanager.web.service.tokens.JwtTokenService;
 
 import org.springframework.context.annotation.Bean;
@@ -29,6 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * Create security config
+     *
      * @param jwtTokenService service that works with tokens
      */
     public WebSecurityConfig(final JwtTokenService jwtTokenService) {
@@ -75,9 +76,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * Configure custom authentication provider
+     *
+     * @param auth builder of a main authentication strategy
      */
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
+    protected void configure(final AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(new JwtAuthenticationProvider(jwtTokenService));
     }
 }

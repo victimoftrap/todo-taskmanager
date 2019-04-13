@@ -1,4 +1,4 @@
-package it.sevenbits.backend.taskmanager.web.security;
+package it.sevenbits.backend.taskmanager.config.settings;
 
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;

@@ -28,7 +28,7 @@ public interface JwtTokenService {
      * Parse token
      *
      * @param token received token
-     * @return
+     * @return authenticated token
      */
     Authentication parseToken(String token);
 }

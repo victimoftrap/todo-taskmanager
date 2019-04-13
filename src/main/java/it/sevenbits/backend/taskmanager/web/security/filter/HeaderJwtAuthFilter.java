@@ -1,6 +1,6 @@
-package it.sevenbits.backend.taskmanager.web.security.authentication.filter;
+package it.sevenbits.backend.taskmanager.web.security.filter;
 
-import it.sevenbits.backend.taskmanager.web.security.authentication.JwtAuthenticationException;
+import it.sevenbits.backend.taskmanager.web.security.provider.JwtAuthenticationException;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -21,17 +21,10 @@ public class HeaderJwtAuthFilter extends JwtAuthFilter {
      *
      * @param matcher some matcher
      */
-    public HeaderJwtAuthFilter(RequestMatcher matcher) {
+    public HeaderJwtAuthFilter(final RequestMatcher matcher) {
         super(matcher);
     }
 
-    /**
-     * Get token from header
-     *
-     * @param request request with token in header
-     * @return encoded token from header
-     * @throws AuthenticationException if authorization header are invalid
-     */
     @Override
     protected String takeToken(final HttpServletRequest request) throws AuthenticationException {
         String authHeader = request.getHeader("Authorization");

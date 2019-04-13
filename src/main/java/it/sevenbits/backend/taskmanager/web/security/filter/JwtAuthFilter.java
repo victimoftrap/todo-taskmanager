@@ -1,6 +1,6 @@
-package it.sevenbits.backend.taskmanager.web.security.authentication.filter;
+package it.sevenbits.backend.taskmanager.web.security.filter;
 
-import it.sevenbits.backend.taskmanager.web.security.authentication.model.NonAuthenticatedJwtToken;
+import it.sevenbits.backend.taskmanager.web.security.model.NonAuthenticatedJwtToken;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-abstract public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
+/**
+ * Class for work with work with token in "Authorization" header
+ */
+public abstract class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
@@ -36,7 +39,7 @@ abstract public class JwtAuthFilter extends AbstractAuthenticationProcessingFilt
      *
      * @param request  web request with token or maybe don't
      * @param response web response
-     * @return non-authenticated token if it exists in request
+     * @return non-authenticated token if it exists in request or anonymous token
      * @throws AuthenticationException if request without token
      */
     @Override
@@ -53,7 +56,14 @@ abstract public class JwtAuthFilter extends AbstractAuthenticationProcessingFilt
         return new NonAuthenticatedJwtToken(token);
     }
 
-    protected abstract String takeToken(final HttpServletRequest request) throws AuthenticationException;
+    /**
+     * Get token from header
+     *
+     * @param request request where we would search "Authorization" header
+     * @return encoded token from header or null
+     * @throws AuthenticationException if authorization header are invalid
+     */
+    protected abstract String takeToken(HttpServletRequest request) throws AuthenticationException;
 
     private Authentication anonymousToken() {
         return new AnonymousAuthenticationToken(
@@ -64,6 +74,11 @@ abstract public class JwtAuthFilter extends AbstractAuthenticationProcessingFilt
 
     /**
      * Save authorization
+     *
+     * @param request    web request
+     * @param response   web response
+     * @param chain      chain of a filtered requests
+     * @param authResult result of authentication
      */
     @Override
     protected void successfulAuthentication(

@@ -1,6 +1,6 @@
-package it.sevenbits.backend.taskmanager.web.security.authentication;
+package it.sevenbits.backend.taskmanager.web.security.provider;
 
-import it.sevenbits.backend.taskmanager.web.security.authentication.model.NonAuthenticatedJwtToken;
+import it.sevenbits.backend.taskmanager.web.security.model.NonAuthenticatedJwtToken;
 import it.sevenbits.backend.taskmanager.web.service.tokens.JwtTokenService;
 
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * Custom authentication provider
+ * Class that process request for authentication
  */
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -30,7 +30,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
      * Check can this provider work with received authentication type
      *
      * @param authentication auth type
-     * @return true if supprted type
+     * @return true if type supported by this provider
      */
     @Override
     public boolean supports(final Class<?> authentication) {

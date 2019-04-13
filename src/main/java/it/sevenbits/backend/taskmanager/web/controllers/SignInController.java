@@ -11,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Controller for handling sign in requests
@@ -27,6 +29,7 @@ public class SignInController {
      * Create controller for signing in user
      *
      * @param signInService service that verifying requests
+     * @param tokenService  service that works with user tokens
      */
     public SignInController(final SignInService signInService,
                             @Qualifier(value = "jwtTokenService") final JwtTokenService tokenService) {
@@ -34,6 +37,14 @@ public class SignInController {
         this.tokenService = tokenService;
     }
 
+    /**
+     * Sign in user in server
+     *
+     * @param request request with user personal data
+     * @return response for signing in
+     * 200 - user signed in
+     * 403 - received user data doesn't match with data in server
+     */
     @RequestMapping(
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,

@@ -1,6 +1,6 @@
 package it.sevenbits.backend.taskmanager.web.controllers;
 
-import it.sevenbits.backend.taskmanager.config.MetaDataSettings;
+import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;

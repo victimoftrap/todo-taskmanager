@@ -1,6 +1,6 @@
-package it.sevenbits.backend.taskmanager.web.security.authentication.filter;
+package it.sevenbits.backend.taskmanager.web.security.filter;
 
-import it.sevenbits.backend.taskmanager.web.security.authentication.JwtAuthenticationException;
+import it.sevenbits.backend.taskmanager.web.security.provider.JwtAuthenticationException;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -18,12 +18,12 @@ public class CookieJwtAuthFilter extends JwtAuthFilter {
      *
      * @param matcher some matcher
      */
-    public CookieJwtAuthFilter(RequestMatcher matcher) {
+    public CookieJwtAuthFilter(final RequestMatcher matcher) {
         super(matcher);
     }
 
     @Override
-    protected String takeToken(HttpServletRequest request) throws AuthenticationException {
+    protected String takeToken(final HttpServletRequest request) throws AuthenticationException {
         Cookie cookie = WebUtils.getCookie(request, "accessToken");
         if (cookie != null) {
             return cookie.getValue();

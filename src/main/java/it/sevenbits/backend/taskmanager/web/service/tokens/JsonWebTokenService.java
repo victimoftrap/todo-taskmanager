@@ -1,8 +1,8 @@
 package it.sevenbits.backend.taskmanager.web.service.tokens;
 
 import it.sevenbits.backend.taskmanager.core.model.User;
-import it.sevenbits.backend.taskmanager.web.security.JwtSettings;
-import it.sevenbits.backend.taskmanager.web.security.authentication.model.AuthenticatedJwtToken;
+import it.sevenbits.backend.taskmanager.config.settings.JwtSettings;
+import it.sevenbits.backend.taskmanager.web.security.model.AuthenticatedJwtToken;
 
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;

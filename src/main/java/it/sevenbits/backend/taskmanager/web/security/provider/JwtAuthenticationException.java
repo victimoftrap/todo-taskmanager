@@ -1,4 +1,4 @@
-package it.sevenbits.backend.taskmanager.web.security.authentication;
+package it.sevenbits.backend.taskmanager.web.security.provider;
 
 import org.springframework.security.core.AuthenticationException;
 

@@ -1,4 +1,4 @@
-package it.sevenbits.backend.taskmanager.web.security.authentication.model;
+package it.sevenbits.backend.taskmanager.web.security.model;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 

@@ -1,8 +1,9 @@
 package it.sevenbits.backend.taskmanager.config;
 
+import it.sevenbits.backend.taskmanager.config.settings.JwtSettings;
+import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
 import it.sevenbits.backend.taskmanager.core.repository.users.UsersRepository;
-import it.sevenbits.backend.taskmanager.web.security.JwtSettings;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
 import it.sevenbits.backend.taskmanager.web.service.tokens.JsonWebTokenService;
@@ -44,6 +45,12 @@ public class WebServiceConfig {
         return new WebUsersService(usersRepository);
     }
 
+    /**
+     * Create service for working with JWT tokens
+     *
+     * @param settings settings for token signature
+     * @return token service
+     */
     @Bean
     @Qualifier(value = "jwtTokenService")
     public JwtTokenService jwtTokenService(final JwtSettings settings) {
