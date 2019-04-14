@@ -14,3 +14,12 @@ jwt:
   issuer: 'some.admin@mail.net'
   signingKey: 'Zcps300xgpKs8rgc6lrb'
   aTokenDuration: 30
+
+configuration:
+  meta:
+    status: inbox
+    order: desc
+    start-page: 1
+    page-size: 25
+    min-page-size: 10
+    max-page-size: 50

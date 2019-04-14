@@ -1,32 +1,44 @@
 package it.sevenbits.backend.taskmanager.config.settings;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 /**
  * Class with default metadata settings
  */
 @Component
-@PropertySource("classpath:configuration.properties")
 public class MetaDataSettings {
-    @Value("${default.status}")
-    private String status = null;
+    private String status;
+    private String order;
+    private Integer page;
+    private Integer pageSize;
+    private Integer minPageSize;
+    private Integer maxPageSize;
 
-    @Value("${default.order}")
-    private String order = null;
-
-    @Value("${default.start-page}")
-    private Integer page = null;
-
-    @Value("${default.page-size}")
-    private Integer pageSize = null;
-
-    @Value("${default.min-page-size}")
-    private Integer minPageSize = null;
-
-    @Value("${default.max-page-size}")
-    private Integer maxPageSize = null;
+    /**
+     * Read default settings for metadata
+     *
+     * @param status      status of tasks
+     * @param order       order of tasks
+     * @param page        start page of task list
+     * @param pageSize    default page size
+     * @param minPageSize min page size
+     * @param maxPageSize max page size
+     */
+    private MetaDataSettings(
+            @Value("${configuration.meta.status}") final String status,
+            @Value("${configuration.meta.order}") final String order,
+            @Value("${configuration.meta.start-page}") final Integer page,
+            @Value("${configuration.meta.page-size}") final Integer pageSize,
+            @Value("${configuration.meta.min-page-size}") final Integer minPageSize,
+            @Value("${configuration.meta.max-page-size}") final Integer maxPageSize) {
+        this.status = status;
+        this.order = order;
+        this.page = page;
+        this.pageSize = pageSize;
+        this.minPageSize = minPageSize;
+        this.maxPageSize = maxPageSize;
+    }
 
     /**
      * Get default status of tasks
