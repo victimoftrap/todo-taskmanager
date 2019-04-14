@@ -1,6 +1,7 @@
 package it.sevenbits.backend.taskmanager.core.repository.users;
 
 import it.sevenbits.backend.taskmanager.core.model.User;
+import it.sevenbits.backend.taskmanager.web.model.requests.SignUpRequest;
 
 import java.util.List;
 
@@ -8,6 +9,14 @@ import java.util.List;
  * Interface for repository with users data
  */
 public interface UsersRepository {
+    /**
+     * Create new account
+     *
+     * @param user user registration data
+     * @return created user
+     */
+    User createUser(SignUpRequest user);
+
     /**
      * Find user by his ID
      *

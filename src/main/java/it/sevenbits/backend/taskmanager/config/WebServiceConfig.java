@@ -1,20 +1,22 @@
 package it.sevenbits.backend.taskmanager.config;
 
-import it.sevenbits.backend.taskmanager.config.settings.JwtSettings;
-import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
 import it.sevenbits.backend.taskmanager.core.repository.users.UsersRepository;
-import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
-import it.sevenbits.backend.taskmanager.web.service.signin.SignInService;
-import it.sevenbits.backend.taskmanager.web.service.signin.WebSignInService;
-import it.sevenbits.backend.taskmanager.web.service.tasks.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
-import it.sevenbits.backend.taskmanager.web.service.tokens.JsonWebTokenService;
-import it.sevenbits.backend.taskmanager.web.service.tokens.JwtTokenService;
+import it.sevenbits.backend.taskmanager.web.service.tasks.TaskControllerService;
 import it.sevenbits.backend.taskmanager.web.service.users.UsersService;
 import it.sevenbits.backend.taskmanager.web.service.users.WebUsersService;
-import it.sevenbits.backend.taskmanager.web.service.whoami.WebWhoAmIService;
+import it.sevenbits.backend.taskmanager.web.service.signin.SignInService;
+import it.sevenbits.backend.taskmanager.web.service.signin.WebSignInService;
+import it.sevenbits.backend.taskmanager.web.service.signup.SignUpService;
+import it.sevenbits.backend.taskmanager.web.service.signup.SignUpServiceImpl;
 import it.sevenbits.backend.taskmanager.web.service.whoami.WhoAmIService;
+import it.sevenbits.backend.taskmanager.web.service.whoami.WebWhoAmIService;
+import it.sevenbits.backend.taskmanager.web.service.tokens.JwtTokenService;
+import it.sevenbits.backend.taskmanager.web.service.tokens.JsonWebTokenService;
+import it.sevenbits.backend.taskmanager.config.settings.JwtSettings;
+import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
+import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -74,26 +76,48 @@ public class WebServiceConfig {
         return new JsonWebTokenService(settings);
     }
 
+    /**
+     * Create service for signing in users
+     *
+     * @param usersRepository repository with users
+     * @param passwordEncoder encoder of a user password
+     * @return service that signs in user
+     */
     @Bean
     @Qualifier(value = "signInService")
     public SignInService signInService(
-            @Qualifier("usersRepository") final UsersRepository repository,
+            @Qualifier("usersRepository") final UsersRepository usersRepository,
             @Qualifier("passwordEncoder") final PasswordEncoder passwordEncoder) {
-        return new WebSignInService(repository, passwordEncoder);
+        return new WebSignInService(usersRepository, passwordEncoder);
+    }
+
+    /**
+     * Create service for creating new accounts
+     *
+     * @param usersRepository repository with users
+     * @param passwordEncoder encoder of a user password
+     * @return service
+     */
+    @Bean
+    @Qualifier(value = "signUpService")
+    public SignUpService signUpService(
+            @Qualifier("usersRepository") final UsersRepository usersRepository,
+            @Qualifier("passwordEncoder") final PasswordEncoder passwordEncoder) {
+        return new SignUpServiceImpl(usersRepository, passwordEncoder);
     }
 
     /**
      * Create service for recognizing current user
      *
-     * @param usersService    service that works with users in database
+     * @param usersRepository repository with users
      * @param jwtTokenService service that works with user tokens
      * @return information service
      */
     @Bean
     @Qualifier(value = "whoAmIService")
     public WhoAmIService whoAmIService(
-            @Qualifier("usersService") final UsersService usersService,
+            @Qualifier("usersRepository") final UsersRepository usersRepository,
             @Qualifier(value = "jwtTokenService") final JwtTokenService jwtTokenService) {
-        return new WebWhoAmIService(usersService, jwtTokenService);
+        return new WebWhoAmIService(usersRepository, jwtTokenService);
     }
 }

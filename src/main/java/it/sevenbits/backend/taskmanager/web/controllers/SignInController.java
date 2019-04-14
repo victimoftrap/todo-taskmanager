@@ -6,7 +6,6 @@ import it.sevenbits.backend.taskmanager.web.model.responses.SignInResponse;
 import it.sevenbits.backend.taskmanager.web.service.signin.SignInService;
 import it.sevenbits.backend.taskmanager.web.service.tokens.JwtTokenService;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

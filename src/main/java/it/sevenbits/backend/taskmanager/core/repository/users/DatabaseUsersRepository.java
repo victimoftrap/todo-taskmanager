@@ -1,18 +1,21 @@
 package it.sevenbits.backend.taskmanager.core.repository.users;
 
 import it.sevenbits.backend.taskmanager.core.model.User;
+import it.sevenbits.backend.taskmanager.web.model.requests.SignUpRequest;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collections;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Implementation of users repository based on connection to database
@@ -23,6 +26,7 @@ public class DatabaseUsersRepository implements UsersRepository {
     private final String USERNAME = "username";
     private final String PASSWORD = "password";
     private final String AUTHORITY = "authority";
+    private final String ROLE_USER = "USER";
 
     /**
      * Create repository
@@ -31,6 +35,33 @@ public class DatabaseUsersRepository implements UsersRepository {
      */
     public DatabaseUsersRepository(final JdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
+    }
+
+    @Override
+    public User createUser(final SignUpRequest request) {
+        String userQuery = "INSERT INTO users VALUES (?, ?, ?, ?)";
+        String authoritiesQuery = "INSERT INTO authorities VALUES (?, ?)";
+
+        String id = UUID.randomUUID().toString();
+        String username = request.getUsername();
+        String password = request.getPassword();
+        boolean enabled = true;
+        List<String> authorities = new ArrayList<>();
+        authorities.add(ROLE_USER);
+
+        try {
+            jdbcOperations.update(
+                    userQuery,
+                    id, username, password, enabled
+            );
+        } catch (DuplicateKeyException e) {
+            return null;
+        }
+        jdbcOperations.update(
+                authoritiesQuery,
+                id, ROLE_USER
+        );
+        return new User(id, username, password, Collections.unmodifiableList(authorities));
     }
 
     @Override

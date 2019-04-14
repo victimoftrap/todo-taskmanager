@@ -8,7 +8,6 @@ import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
 import it.sevenbits.backend.taskmanager.web.model.requests.AddTaskRequest;
 import it.sevenbits.backend.taskmanager.web.model.requests.UpdateTaskRequest;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -147,7 +146,7 @@ public class TaskController {
         UpdateTaskResponse response = service.updateTaskById(id, request);
         if (response == null) {
             return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
+                    .badRequest()
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .build();
         }
@@ -157,8 +156,7 @@ public class TaskController {
                     .build();
         }
         return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .noContent()
                 .build();
     }
 
