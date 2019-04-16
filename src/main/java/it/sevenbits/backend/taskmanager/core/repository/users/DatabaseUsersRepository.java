@@ -3,10 +3,10 @@ package it.sevenbits.backend.taskmanager.core.repository.users;
 import it.sevenbits.backend.taskmanager.core.model.User;
 import it.sevenbits.backend.taskmanager.web.model.requests.SignUpRequest;
 
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.util.UUID;
 import java.util.List;
@@ -26,6 +26,7 @@ public class DatabaseUsersRepository implements UsersRepository {
     private final String USERNAME = "username";
     private final String PASSWORD = "password";
     private final String AUTHORITY = "authority";
+    private final String ROLE_ADMIN = "ADMIN";
     private final String ROLE_USER = "USER";
 
     /**
@@ -132,5 +133,28 @@ public class DatabaseUsersRepository implements UsersRepository {
             }
         });
         return Collections.unmodifiableList(new ArrayList<>(users.values()));
+    }
+
+    @Override
+    public User updateUser(final User update) {
+        String id = update.getId();
+        boolean enabled = true;
+        // TODO: add somewhere 'enabled' field
+        jdbcOperations.update(
+                "UPDATE users SET enabled=? WHERE id=?",
+                enabled, id
+        );
+
+        List<String> authorities = update.getAuthorities();
+        if (authorities != null) {
+            jdbcOperations.update("DELETE FROM authorities WHERE userId=?", id);
+            for (String authority : authorities) {
+                jdbcOperations.update(
+                        "INSERT INTO authorities VALUES(?, ?)",
+                        id, authority
+                );
+            }
+        }
+        return update;
     }
 }

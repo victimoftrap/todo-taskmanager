@@ -1,9 +1,10 @@
 package it.sevenbits.backend.taskmanager.config;
 
-import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
-import it.sevenbits.backend.taskmanager.core.service.validation.SortingOrderValidator;
-import it.sevenbits.backend.taskmanager.core.service.validation.StatusValidator;
 import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
+import it.sevenbits.backend.taskmanager.core.service.validation.IdValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.StatusValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.SortingOrderValidator;
+import it.sevenbits.backend.taskmanager.core.service.validation.UserRoleValidator;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -45,5 +46,16 @@ public class ValidatorConfig {
     @Qualifier("sortingOrderValidator")
     public Verifiable<String> sortingOrderValidator() {
         return new SortingOrderValidator();
+    }
+
+    /**
+     * Create user roles validator
+     *
+     * @return validator of user roles
+     */
+    @Bean
+    @Qualifier("userRoleValidator")
+    public Verifiable<String> userRoleValidator() {
+        return new UserRoleValidator();
     }
 }

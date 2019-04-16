@@ -3,6 +3,8 @@ package it.sevenbits.backend.taskmanager.web.service.users;
 import it.sevenbits.backend.taskmanager.core.model.User;
 import it.sevenbits.backend.taskmanager.core.repository.users.UsersRepository;
 import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
+import it.sevenbits.backend.taskmanager.web.model.requests.UpdateUserRequest;
+import it.sevenbits.backend.taskmanager.web.model.responses.UpdateUserResponse;
 
 import java.util.List;
 
@@ -12,16 +14,21 @@ import java.util.List;
 public class WebUsersService implements UsersService {
     private final UsersRepository repository;
     private final Verifiable<String> idValidator;
+    private final Verifiable<String> userRoleValidator;
 
     /**
      * Create service that validates requests and calls DAO
      *
-     * @param repository  DAO, connected to database
-     * @param idValidator validator of received ID
+     * @param repository        DAO, connected to database
+     * @param idValidator       validator of received ID
+     * @param userRoleValidator validator of received user roles
      */
-    public WebUsersService(final UsersRepository repository, final Verifiable<String> idValidator) {
+    public WebUsersService(final UsersRepository repository,
+                           final Verifiable<String> idValidator,
+                           final Verifiable<String> userRoleValidator) {
         this.repository = repository;
         this.idValidator = idValidator;
+        this.userRoleValidator = userRoleValidator;
     }
 
     @Override
@@ -43,5 +50,23 @@ public class WebUsersService implements UsersService {
     @Override
     public List<User> getAllUsers() {
         return repository.findAll();
+    }
+
+    @Override
+    public UpdateUserResponse updateUser(final String id, final UpdateUserRequest request) {
+        User needed = getUserById(id);
+        if (needed == null) {
+            return new UpdateUserResponse("");
+        }
+
+        List<String> roles = request.getAuthorities();
+        for (String role : roles) {
+            if (!userRoleValidator.verify(role)) {
+                return null;
+            }
+        }
+        User updated = new User(id, needed.getUsername(), needed.getPassword(), roles);
+        repository.updateUser(updated);
+        return new UpdateUserResponse(id);
     }
 }

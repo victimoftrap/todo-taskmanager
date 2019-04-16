@@ -1,6 +1,8 @@
 package it.sevenbits.backend.taskmanager.web.service.users;
 
 import it.sevenbits.backend.taskmanager.core.model.User;
+import it.sevenbits.backend.taskmanager.web.model.requests.UpdateUserRequest;
+import it.sevenbits.backend.taskmanager.web.model.responses.UpdateUserResponse;
 
 import java.util.List;
 
@@ -30,4 +32,13 @@ public interface UsersService {
      * @return list of users
      */
     List<User> getAllUsers();
+
+    /**
+     * Update user account
+     *
+     * @param id      user ID
+     * @param request request with new account data
+     * @return updated user
+     */
+    UpdateUserResponse updateUser(String id, UpdateUserRequest request);
 }

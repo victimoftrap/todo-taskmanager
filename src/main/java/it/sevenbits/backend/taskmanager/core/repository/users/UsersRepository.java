@@ -39,4 +39,12 @@ public interface UsersRepository {
      * @return list with users
      */
     List<User> findAll();
+
+    /**
+     * Update user account
+     *
+     * @param update updated fields of account
+     * @return updated account model
+     */
+    User updateUser(User update);
 }

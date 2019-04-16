@@ -52,16 +52,18 @@ public class WebServiceConfig {
     /**
      * Create users service
      *
-     * @param usersRepository repository with users
-     * @param idValidator     user ID validator
+     * @param usersRepository   repository with users
+     * @param idValidator       user ID validator
+     * @param userRoleValidator user roles validator
      * @return service created by repository
      */
     @Bean
     @Qualifier("usersService")
     public UsersService usersService(
             @Qualifier("usersRepository") final UsersRepository usersRepository,
-            @Qualifier("idValidator") final Verifiable<String> idValidator) {
-        return new WebUsersService(usersRepository, idValidator);
+            @Qualifier("idValidator") final Verifiable<String> idValidator,
+            @Qualifier("userRoleValidator") final Verifiable<String> userRoleValidator) {
+        return new WebUsersService(usersRepository, idValidator, userRoleValidator);
     }
 
     /**
