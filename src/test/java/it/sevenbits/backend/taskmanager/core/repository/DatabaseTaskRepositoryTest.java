@@ -3,6 +3,7 @@ package it.sevenbits.backend.taskmanager.core.repository;
 import it.sevenbits.backend.taskmanager.core.model.Task;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.DatabaseTaskRepository;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,7 +28,8 @@ public class DatabaseTaskRepositoryTest {
                             eq(resultSet.getString(2)),
                             eq(resultSet.getString(3)),
                             eq(resultSet.getString(4)),
-                            eq(resultSet.getString(5))
+                            eq(resultSet.getString(5)),
+                            eq(resultSet.getString(6))
                     );
 
     @Before
@@ -55,29 +57,31 @@ public class DatabaseTaskRepositoryTest {
     public void testGetTaskById() {
         String id = UUID.randomUUID().toString();
         Task mockTask = mock(Task.class);
-        when(mockJdbcOperations.queryForObject(anyString(), any(RowMapper.class), anyString())).thenReturn(mockTask);
+        when(mockJdbcOperations.queryForObject(anyString(), any(RowMapper.class), anyString(), anyString())).thenReturn(mockTask);
 
-        Task answer = taskRepository.getTask(id);
+        Task answer = taskRepository.getTask(id, id);
         verify(mockJdbcOperations, times(1))
                 .queryForObject(
-                        eq("SELECT id, text, status, createdAt, updatedAt FROM tasks WHERE id=?"),
+                        eq("SELECT id, text, status, createdAt, updatedAt, owner FROM tasks WHERE owner=? AND id=?"),
                         any(RowMapper.class),
+                        eq(id),
                         eq(id)
                 );
         assertEquals(mockTask, answer);
     }
 
     @Test
-    public void test() {
+    public void notFoundTaskById() {
         String id = UUID.randomUUID().toString();
-        when(mockJdbcOperations.queryForObject(anyString(), any(RowMapper.class), anyString()))
+        when(mockJdbcOperations.queryForObject(anyString(), any(RowMapper.class), anyString(), anyString()))
                 .thenThrow(EmptyResultDataAccessException.class);
 
-        Task answer = taskRepository.getTask(id);
+        Task answer = taskRepository.getTask(id, id);
         verify(mockJdbcOperations, times(1))
                 .queryForObject(
-                        eq("SELECT id, text, status, createdAt, updatedAt FROM tasks WHERE id=?"),
+                        eq("SELECT id, text, status, createdAt, updatedAt, owner FROM tasks WHERE owner=? AND id=?"),
                         any(RowMapper.class),
+                        eq(id),
                         eq(id)
                 );
         assertNull(answer);
@@ -87,21 +91,23 @@ public class DatabaseTaskRepositoryTest {
     public void testCreateTask() {
         String text = "text";
         String status = "inbox";
+        String owner = UUID.randomUUID().toString();
         when(mockJdbcOperations.update(anyString(), anyString(), anyString(),
-                anyString(), any(Timestamp.class), any(Timestamp.class))).thenReturn(1);
+                anyString(), any(Timestamp.class), any(Timestamp.class), anyString())).thenReturn(1);
 
-        Task task = taskRepository.createTask(text, status);
+        Task task = taskRepository.createTask(text, status, owner);
 
         assertNotNull(task);
         assertEquals(text, task.getText());
         assertEquals(status, task.getStatus());
         verify(mockJdbcOperations, times(1)).update(
-                eq("INSERT INTO tasks VALUES(?,?,?,?,?)"),
+                eq("INSERT INTO tasks VALUES(?,?,?,?,?,?)"),
                 eq(task.getId()),
                 eq(text),
                 eq(status),
                 eq(Timestamp.valueOf(task.getCreatedAt())),
-                eq(Timestamp.valueOf(task.getUpdatedAt()))
+                eq(Timestamp.valueOf(task.getUpdatedAt())),
+                eq(owner)
         );
     }
 
@@ -109,14 +115,14 @@ public class DatabaseTaskRepositoryTest {
     public void testRemoveTaskById() {
         String id = UUID.randomUUID().toString();
         Task mockTask = mock(Task.class);
-        when(mockJdbcOperations.queryForObject(anyString(), any(RowMapper.class), anyString())).thenReturn(mockTask);
+        when(mockJdbcOperations.queryForObject(anyString(), any(RowMapper.class), anyString(), anyString())).thenReturn(mockTask);
         when(mockJdbcOperations.update(anyString(), anyString())).thenReturn(1);
 
-        Task answer = taskRepository.removeTask(id);
+        Task answer = taskRepository.removeTask(id, id);
         assertNotNull(answer);
         verify(mockJdbcOperations, times(1)).update(
-                eq("DELETE FROM tasks WHERE id=?"),
-                eq(id)
+                eq("DELETE FROM tasks WHERE owner=? AND id=?"),
+                eq(id), eq(id)
         );
     }
 

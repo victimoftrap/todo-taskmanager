@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+import static org.junit.Assert.*;
 
 public class TaskTest {
     @Test
@@ -17,7 +17,8 @@ public class TaskTest {
         String text = "Create tests";
         String status = "inbox";
         String created = dateFormat.format(new Date());
-        Task task = new Task(id, text, status, created, created);
+        String owner = UUID.randomUUID().toString();
+        Task task = new Task(id, text, status, created, created, owner);
 
         assertNotNull(task);
         assertEquals(id, task.getId());
@@ -25,5 +26,6 @@ public class TaskTest {
         assertEquals(status, task.getStatus());
         assertEquals(created, task.getCreatedAt());
         assertEquals(created, task.getUpdatedAt());
+        assertEquals(owner, task.getOwner());
     }
 }
