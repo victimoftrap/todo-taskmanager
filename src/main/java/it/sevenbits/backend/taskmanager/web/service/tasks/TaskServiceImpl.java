@@ -1,7 +1,7 @@
 package it.sevenbits.backend.taskmanager.web.service.tasks;
 
-import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.model.Task;
+import it.sevenbits.backend.taskmanager.config.settings.MetaDataSettings;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
 import it.sevenbits.backend.taskmanager.core.service.validation.Verifiable;
 import it.sevenbits.backend.taskmanager.web.model.meta.GetTasksMetaData;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Service that validates ID from request and generates responses
  */
-public class TaskControllerService implements TaskService {
+public class TaskServiceImpl implements TaskService {
     private final TaskRepository repository;
     private final MetaDataSettings settings;
     private final Verifiable<String> idValidator;
@@ -34,7 +34,7 @@ public class TaskControllerService implements TaskService {
      * @param sortingOrderValidator sorting order for tasks in list validator
      * @param settings              default settings for service
      */
-    public TaskControllerService(
+    public TaskServiceImpl(
             final TaskRepository repository,
             final Verifiable<String> idValidator,
             final Verifiable<String> statusValidator,
@@ -141,22 +141,22 @@ public class TaskControllerService implements TaskService {
     }
 
     @Override
-    public Task createTask(final AddTaskRequest request) {
-        return repository.createTask(request.getText(), "inbox");
+    public Task createTask(final String owner, final AddTaskRequest request) {
+        return repository.createTask(request.getText(), "inbox", owner);
     }
 
     @Override
-    public GetTasksResponse getTasksByStatus(final GetTasksRequest request) {
+    public GetTasksResponse getTasksByStatus(final String owner, final GetTasksRequest request) {
         String status = choosePaginationSetting(statusValidator, request.getStatus(), settings.getStatus());
         String order = choosePaginationSetting(sortingOrderValidator, request.getOrder(), settings.getOrder());
         int size = choosePageSize(request.getSize(), settings.getSize(),
                 settings.getMinPageSize(), settings.getMaxPageSize());
 
-        int totalCount = repository.getCountTasks(status);
+        int totalCount = repository.getCountTasks(status, owner);
         int pagesCount = Math.max((int) Math.ceil((double) totalCount / size), 1);
         int page = choosePageNumber(request.getPage(), settings.getPage(), pagesCount);
 
-        List<Task> tasks = repository.getTasks(status, order, page, size);
+        List<Task> tasks = repository.getTasks(owner, status, order, page, size);
 
         String firstPage = buildUriFor(status, order, 1, size);
         String lastPage = buildUriFor(status, order, pagesCount, size);
@@ -171,23 +171,23 @@ public class TaskControllerService implements TaskService {
     }
 
     @Override
-    public Task getTaskById(final String id) {
-        if (!idValidator.verify(id)) {
+    public Task getTaskById(final String owner, final String id) {
+        if (!idValidator.verify(id) || !idValidator.verify(owner)) {
             return null;
         }
-        return repository.getTask(id);
+        return repository.getTask(id, owner);
     }
 
     @Override
-    public UpdateTaskResponse updateTaskById(final String id, final UpdateTaskRequest request) {
-        if (!idValidator.verify(id)) {
+    public UpdateTaskResponse updateTaskById(final String owner, final String id, final UpdateTaskRequest request) {
+        if (!idValidator.verify(id) || !idValidator.verify(owner)) {
             return null;
         }
         if (request.getStatus() != null && !statusValidator.verify(request.getStatus())) {
             return null;
         }
 
-        Task oldTask = repository.getTask(id);
+        Task oldTask = repository.getTask(id, owner);
         if (oldTask == null) {
             return new UpdateTaskResponse("");
         }
@@ -199,17 +199,18 @@ public class TaskControllerService implements TaskService {
                 updText,
                 updStatus,
                 oldTask.getCreatedAt(),
-                oldTask.getUpdatedAt()
+                oldTask.getUpdatedAt(),
+                owner
         );
         repository.updateTask(updated.getId(), updated);
         return new UpdateTaskResponse(id);
     }
 
     @Override
-    public Task removeTaskById(final String id) {
-        if (!idValidator.verify(id)) {
+    public Task removeTaskById(final String owner, final String id) {
+        if (!idValidator.verify(id) || !idValidator.verify(owner)) {
             return null;
         }
-        return repository.removeTask(id);
+        return repository.removeTask(id, owner);
     }
 }

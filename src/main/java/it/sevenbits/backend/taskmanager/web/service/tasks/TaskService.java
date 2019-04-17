@@ -14,41 +14,46 @@ public interface TaskService {
     /**
      * Create new task
      *
+     * @param owner   ID of a user, that creating this tasks
      * @param request request object with text for task
      * @return created task by request
      */
-    Task createTask(AddTaskRequest request);
+    Task createTask(String owner, AddTaskRequest request);
 
     /**
      * Get all user's tasks
      *
+     * @param owner   ID of a user, that created this tasks
      * @param request request for getting tasks
      * @return response with tasks list
      */
-    GetTasksResponse getTasksByStatus(GetTasksRequest request);
+    GetTasksResponse getTasksByStatus(String owner, GetTasksRequest request);
 
     /**
      * Get task by his ID
      *
-     * @param id ID of a task
+     * @param owner ID of a user, that created this tasks
+     * @param id    ID of a task
      * @return requested task or null, if task doesn't exist
      */
-    Task getTaskById(String id);
+    Task getTaskById(String owner, String id);
 
     /**
      * Update task
      *
+     * @param owner   ID of a user, that created this tasks
      * @param id      ID of a task
      * @param request request for updating task
      * @return response about task update
      */
-    UpdateTaskResponse updateTaskById(String id, UpdateTaskRequest request);
+    UpdateTaskResponse updateTaskById(String owner, String id, UpdateTaskRequest request);
 
     /**
      * Delete task
      *
-     * @param id ID of a task
+     * @param owner ID of a user, that created this tasks
+     * @param id    ID of a task
      * @return deleted task or null, if task doesn't exist
      */
-    Task removeTaskById(String id);
+    Task removeTaskById(String owner, String id);
 }

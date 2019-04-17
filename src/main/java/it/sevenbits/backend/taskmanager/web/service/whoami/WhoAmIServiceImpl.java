@@ -7,7 +7,7 @@ import it.sevenbits.backend.taskmanager.web.service.tokens.JwtTokenService;
 /**
  * Service that search for information about current user
  */
-public class WebWhoAmIService implements WhoAmIService {
+public class WhoAmIServiceImpl implements WhoAmIService {
     private final UsersRepository usersRepository;
     private final JwtTokenService jwtTokenService;
 
@@ -17,7 +17,7 @@ public class WebWhoAmIService implements WhoAmIService {
      * @param usersRepository repository with users
      * @param jwtTokenService service that works with user tokens
      */
-    public WebWhoAmIService(final UsersRepository usersRepository, final JwtTokenService jwtTokenService) {
+    public WhoAmIServiceImpl(final UsersRepository usersRepository, final JwtTokenService jwtTokenService) {
         this.usersRepository = usersRepository;
         this.jwtTokenService = jwtTokenService;
     }
@@ -27,7 +27,7 @@ public class WebWhoAmIService implements WhoAmIService {
         if (token == null) {
             return null;
         }
-        String username = jwtTokenService.parseToken(token).getPrincipal().toString();
+        String username = jwtTokenService.parseToken(token.split(" ")[1]).getPrincipal().toString();
         return usersRepository.findUserByName(username);
     }
 }

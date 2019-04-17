@@ -36,22 +36,22 @@ public class MapTaskRepository implements TaskRepository {
     }
 
     @Override
-    public Task createTask(final String text, final String status) {
+    public Task createTask(final String text, final String status, final String owner) {
         String id = UUID.randomUUID().toString();
         String createdAt = dateFormat.format(new Date());
-        Task newTask = new Task(id, text, status, createdAt, createdAt);
+        Task newTask = new Task(id, text, status, createdAt, createdAt, owner);
 
         tasks.putIfAbsent(newTask.getId(), newTask);
         return newTask;
     }
 
     @Override
-    public Task getTask(final String taskId) {
+    public Task getTask(final String taskId, final String owner) {
         return tasks.get(taskId);
     }
 
     @Override
-    public List<Task> getTasks(final String status, final String order, final int page, final int size) {
+    public List<Task> getTasks(final String owner, final String status, final String order, final int page, final int size) {
         int offset = (page - 1) * size;
         List<Task> result = new ArrayList<>();
 
@@ -73,7 +73,7 @@ public class MapTaskRepository implements TaskRepository {
     }
 
     @Override
-    public Task removeTask(final String taskId) {
+    public Task removeTask(final String taskId, final String owner) {
         return tasks.remove(taskId);
     }
 
@@ -83,11 +83,11 @@ public class MapTaskRepository implements TaskRepository {
     }
 
     @Override
-    public int getCountTasks(final String status) {
+    public int getCountTasks(final String status, final String owner) {
         int count = (int) tasks
                 .values()
                 .stream()
-                .filter(t -> status.equals(t.getStatus()))
+                .filter(t -> status.equals(t.getStatus()) && owner.equals(t.getOwner()))
                 .count();
         return count;
     }

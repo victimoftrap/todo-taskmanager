@@ -3,7 +3,7 @@ package it.sevenbits.backend.taskmanager.config;
 import it.sevenbits.backend.taskmanager.core.repository.tasks.TaskRepository;
 import it.sevenbits.backend.taskmanager.core.repository.users.UsersRepository;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
-import it.sevenbits.backend.taskmanager.web.service.tasks.TaskControllerService;
+import it.sevenbits.backend.taskmanager.web.service.tasks.TaskServiceImpl;
 import it.sevenbits.backend.taskmanager.web.service.users.UsersService;
 import it.sevenbits.backend.taskmanager.web.service.users.WebUsersService;
 import it.sevenbits.backend.taskmanager.web.service.signin.SignInService;
@@ -11,7 +11,7 @@ import it.sevenbits.backend.taskmanager.web.service.signin.WebSignInService;
 import it.sevenbits.backend.taskmanager.web.service.signup.SignUpService;
 import it.sevenbits.backend.taskmanager.web.service.signup.SignUpServiceImpl;
 import it.sevenbits.backend.taskmanager.web.service.whoami.WhoAmIService;
-import it.sevenbits.backend.taskmanager.web.service.whoami.WebWhoAmIService;
+import it.sevenbits.backend.taskmanager.web.service.whoami.WhoAmIServiceImpl;
 import it.sevenbits.backend.taskmanager.web.service.tokens.JwtTokenService;
 import it.sevenbits.backend.taskmanager.web.service.tokens.JsonWebTokenService;
 import it.sevenbits.backend.taskmanager.config.settings.JwtSettings;
@@ -46,7 +46,7 @@ public class WebServiceConfig {
             @Qualifier("statusValidator") final Verifiable<String> statusValidator,
             @Qualifier("sortingOrderValidator") final Verifiable<String> sortingOrderValidator,
             final MetaDataSettings settings) {
-        return new TaskControllerService(taskRepository, idValidator, statusValidator, sortingOrderValidator, settings);
+        return new TaskServiceImpl(taskRepository, idValidator, statusValidator, sortingOrderValidator, settings);
     }
 
     /**
@@ -120,6 +120,6 @@ public class WebServiceConfig {
     public WhoAmIService whoAmIService(
             @Qualifier("usersRepository") final UsersRepository usersRepository,
             @Qualifier(value = "jwtTokenService") final JwtTokenService jwtTokenService) {
-        return new WebWhoAmIService(usersRepository, jwtTokenService);
+        return new WhoAmIServiceImpl(usersRepository, jwtTokenService);
     }
 }

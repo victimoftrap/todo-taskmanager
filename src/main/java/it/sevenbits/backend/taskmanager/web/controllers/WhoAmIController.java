@@ -40,7 +40,7 @@ public class WhoAmIController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<User> whoAmI(final HttpServletRequest request) {
-        String token = request.getHeader("Authorization").split(" ")[1];
+        String token = request.getHeader("Authorization");
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

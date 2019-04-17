@@ -1,6 +1,7 @@
 package it.sevenbits.backend.taskmanager.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
@@ -30,6 +31,10 @@ public class Task {
     @NotBlank
     private final String updatedAt;
 
+    @NotBlank
+    @JsonIgnore
+    private final String owner;
+
     /**
      * Create task
      *
@@ -38,18 +43,21 @@ public class Task {
      * @param status    status of a task
      * @param createdAt date/time of task creation
      * @param updatedAt date/time of task update
+     * @param owner     ID of a task owner
      */
     @JsonCreator
     public Task(@JsonProperty("id") final String id,
                 @JsonProperty("text") final String text,
                 @JsonProperty("status") final String status,
                 @JsonProperty("createdAt") final String createdAt,
-                @JsonProperty("updatedAt") final String updatedAt) {
+                @JsonProperty("updatedAt") final String updatedAt,
+                @JsonProperty("owner") final String owner) {
         this.id = id;
         this.text = text;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.owner = owner;
     }
 
     /**
@@ -97,6 +105,15 @@ public class Task {
         return updatedAt;
     }
 
+    /**
+     * Get user ID, that owns this task
+     *
+     * @return user ID
+     */
+    public String getOwner() {
+        return owner;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -109,11 +126,13 @@ public class Task {
         return Objects.equals(id, task.id) &&
                 Objects.equals(text, task.text) &&
                 Objects.equals(status, task.status) &&
-                Objects.equals(createdAt, task.createdAt);
+                Objects.equals(createdAt, task.createdAt) &&
+                Objects.equals(updatedAt, task.updatedAt) &&
+                Objects.equals(owner, task.owner);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, status, createdAt);
+        return Objects.hash(id, text, status, createdAt, updatedAt, owner);
     }
 }

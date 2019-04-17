@@ -26,6 +26,13 @@ public class DatabaseTaskRepository implements TaskRepository {
     private RowMapper<Task> taskMapper;
     private JdbcOperations jdbcOperations;
 
+    private final String TASK_ID = "id";
+    private final String TEXT = "text";
+    private final String STATUS = "status";
+    private final String CREATED_AT = "createdAt";
+    private final String UPDATED_AT = "updatedAt";
+    private final String OWNER_ID = "owner";
+
     /**
      * Create repository
      *
@@ -37,33 +44,34 @@ public class DatabaseTaskRepository implements TaskRepository {
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         this.taskMapper = (resultSet, i) -> {
-            String taskId = resultSet.getString("id");
-            String taskText = resultSet.getString("text");
-            String taskStatus = resultSet.getString("status");
-            String creationDate = resultSet.getString("createdAt");
-            String updateDate = resultSet.getString("updatedAt");
-            return new Task(taskId, taskText, taskStatus, creationDate, updateDate);
+            String taskId = resultSet.getString(TASK_ID);
+            String taskText = resultSet.getString(TEXT);
+            String taskStatus = resultSet.getString(STATUS);
+            String creationDate = resultSet.getString(CREATED_AT);
+            String updateDate = resultSet.getString(UPDATED_AT);
+            String ownerId = resultSet.getString(OWNER_ID);
+            return new Task(taskId, taskText, taskStatus, creationDate, updateDate, ownerId);
         };
     }
 
     @Override
-    public Task createTask(final String text, final String status) {
+    public Task createTask(final String text, final String status, final String owner) {
         String id = UUID.randomUUID().toString();
         Timestamp createTimestamp = Timestamp.from(Instant.now(Clock.systemUTC()));
         jdbcOperations.update(
-                "INSERT INTO tasks VALUES(?,?,?,?,?)",
-                id, text, status, createTimestamp, createTimestamp
+                "INSERT INTO tasks VALUES(?,?,?,?,?,?)",
+                id, text, status, createTimestamp, createTimestamp, owner
         );
-        return new Task(id, text, status, createTimestamp.toString(), createTimestamp.toString());
+        return new Task(id, text, status, createTimestamp.toString(), createTimestamp.toString(), owner);
     }
 
     @Override
-    public Task getTask(final String taskId) {
+    public Task getTask(final String taskId, final String owner) {
         try {
             return jdbcOperations.queryForObject(
-                    "SELECT id, text, status, createdAt, updatedAt FROM tasks WHERE id=?",
+                    "SELECT id, text, status, createdAt, updatedAt, owner FROM tasks WHERE owner=? AND id=?",
                     taskMapper,
-                    taskId
+                    owner, taskId
             );
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -71,17 +79,18 @@ public class DatabaseTaskRepository implements TaskRepository {
     }
 
     @Override
-    public List<Task> getTasks(final String status, final String order, final int page, final int size) {
+    public List<Task> getTasks(final String owner, final String status, final String order, final int page, final int size) {
         String ascQuery =
-                "SELECT id,text,status,createdAt,updatedAt FROM tasks WHERE status=? ORDER BY createdAt ASC OFFSET ? LIMIT ?";
+                "SELECT id,text,status,createdAt,updatedAt,owner FROM tasks WHERE owner=? AND status=? ORDER BY createdAt ASC OFFSET ? LIMIT ?";
         String descQuery =
-                "SELECT id,text,status,createdAt,updatedAt FROM tasks WHERE status=? ORDER BY createdAt DESC OFFSET ? LIMIT ?";
+                "SELECT id,text,status,createdAt,updatedAt,owner FROM tasks WHERE owner=? AND status=? ORDER BY createdAt DESC OFFSET ? LIMIT ?";
         String query = "asc".equalsIgnoreCase(order) ? ascQuery : descQuery;
         int offset = (page - 1) * size;
 
         List<Task> result = jdbcOperations.query(
                 query,
                 taskMapper,
+                owner,
                 status,
                 offset,
                 size
@@ -90,11 +99,11 @@ public class DatabaseTaskRepository implements TaskRepository {
     }
 
     @Override
-    public Task removeTask(final String taskId) {
-        Task toDelete = getTask(taskId);
+    public Task removeTask(final String taskId, final String owner) {
+        Task toDelete = getTask(taskId, owner);
         jdbcOperations.update(
-                "DELETE FROM tasks WHERE id=?",
-                taskId
+                "DELETE FROM tasks WHERE owner=? AND id=?",
+                owner, taskId
         );
         return toDelete;
     }
@@ -109,11 +118,11 @@ public class DatabaseTaskRepository implements TaskRepository {
     }
 
     @Override
-    public int getCountTasks(final String status) {
+    public int getCountTasks(final String status, final String owner) {
         Integer count = jdbcOperations.queryForObject(
-                "SELECT COUNT(*) FROM tasks WHERE status=?",
+                "SELECT COUNT(*) FROM tasks WHERE owner=? AND status=?",
                 (resultSet, i) -> resultSet.getInt(1),
-                status
+                owner, status
         );
         return Optional
                 .ofNullable(count)
