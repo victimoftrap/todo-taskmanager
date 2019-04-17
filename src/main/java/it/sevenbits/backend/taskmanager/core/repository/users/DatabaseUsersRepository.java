@@ -62,7 +62,7 @@ public class DatabaseUsersRepository implements UsersRepository {
                 authoritiesQuery,
                 id, ROLE_USER
         );
-        return new User(id, username, password, Collections.unmodifiableList(authorities));
+        return new User(id, username, password, true, Collections.unmodifiableList(authorities));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class DatabaseUsersRepository implements UsersRepository {
 
         String username = String.valueOf(rawUser.get(USERNAME));
         String password = String.valueOf(rawUser.get(PASSWORD));
-        return new User(id, username, password, authorities);
+        return new User(id, username, password, true, authorities);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class DatabaseUsersRepository implements UsersRepository {
                 (resultSet, i) -> resultSet.getString(AUTHORITY),
                 id
         );
-        return new User(id, username, password, authorities);
+        return new User(id, username, password, true, authorities);
     }
 
     @Override
@@ -126,7 +126,11 @@ public class DatabaseUsersRepository implements UsersRepository {
                 String username = resultSet.getString(USERNAME);
                 String password = resultSet.getString(PASSWORD);
                 String newRole = resultSet.getString(AUTHORITY);
-                User user = users.computeIfAbsent(id, none -> new User(id, username, password, new ArrayList<>()));
+
+                User user = users.computeIfAbsent(
+                        id,
+                        none -> new User(id, username, password, true, new ArrayList<>())
+                );
                 List<String> roles = user.getAuthorities();
                 roles.add(newRole);
                 return user;
@@ -136,16 +140,15 @@ public class DatabaseUsersRepository implements UsersRepository {
     }
 
     @Override
-    public User updateUser(final User update) {
-        String id = update.getId();
-        boolean enabled = true;
-        // TODO: add somewhere 'enabled' field
+    public User updateUser(final User updatedAccount) {
+        String id = updatedAccount.getId();
+        boolean enabled = updatedAccount.isEnabled();
         jdbcOperations.update(
                 "UPDATE users SET enabled=? WHERE id=?",
                 enabled, id
         );
 
-        List<String> authorities = update.getAuthorities();
+        List<String> authorities = updatedAccount.getAuthorities();
         if (authorities != null) {
             jdbcOperations.update("DELETE FROM authorities WHERE userId=?", id);
             for (String authority : authorities) {
@@ -155,6 +158,6 @@ public class DatabaseUsersRepository implements UsersRepository {
                 );
             }
         }
-        return update;
+        return updatedAccount;
     }
 }

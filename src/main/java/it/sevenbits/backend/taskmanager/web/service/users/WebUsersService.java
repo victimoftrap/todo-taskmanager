@@ -65,8 +65,8 @@ public class WebUsersService implements UsersService {
                 return null;
             }
         }
-        User updated = new User(id, needed.getUsername(), needed.getPassword(), roles);
-        repository.updateUser(updated);
+        User updatedAccount = new User(id, needed.getUsername(), needed.getPassword(), request.isEnabled(), roles);
+        repository.updateUser(updatedAccount);
         return new UpdateUserResponse(id);
     }
 }

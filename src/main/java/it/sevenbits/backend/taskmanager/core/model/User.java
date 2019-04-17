@@ -26,6 +26,9 @@ public class User {
     @JsonIgnore
     private final String password;
 
+    @JsonIgnore
+    private boolean enabled;
+
     @NotNull
     @JsonProperty("authorities")
     private final List<String> authorities;
@@ -36,16 +39,19 @@ public class User {
      * @param id          ID of the user
      * @param username    name of the user
      * @param password    password of the user
+     * @param enabled     account status
      * @param authorities user's authorities
      */
     @JsonCreator
     public User(final String id,
                 final String username,
                 final String password,
+                final boolean enabled,
                 final List<String> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.enabled = enabled;
         this.authorities = authorities;
     }
 
@@ -77,6 +83,15 @@ public class User {
     }
 
     /**
+     * Get account status
+     *
+     * @return true if account is enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
      * Get user's authorities
      *
      * @return authorities
@@ -97,11 +112,12 @@ public class User {
         return Objects.equals(id, user.id) &&
                 Objects.equals(username, user.username) &&
                 Objects.equals(password, user.password) &&
+                Objects.equals(enabled, user.enabled) &&
                 Objects.equals(authorities, user.authorities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, authorities);
+        return Objects.hash(id, username, password, enabled, authorities);
     }
 }

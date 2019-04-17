@@ -37,6 +37,6 @@ public class WebSignInService implements SignInService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return null;
         }
-        return new User(user.getId(), user.getUsername(), user.getPassword(), user.getAuthorities());
+        return new User(user.getId(), user.getUsername(), user.getPassword(), true, user.getAuthorities());
     }
 }
