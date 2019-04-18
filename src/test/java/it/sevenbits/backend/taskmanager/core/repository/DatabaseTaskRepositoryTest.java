@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -38,20 +39,31 @@ public class DatabaseTaskRepositoryTest {
         taskRepository = new DatabaseTaskRepository(mockJdbcOperations);
     }
 
-//    @Test
-//    public void testGetAllTasks() {
-//        List<Task> mockTasks = mock(List.class);
-//        when(mockJdbcOperations.query(anyString(), any(RowMapper.class), anyString())).thenReturn(mockTasks);
-//
-//        List<Task> answer = taskRepository.getTasks("inbox");
-//        verify(mockJdbcOperations, times(1))
-//                .query(
-//                        eq("SELECT id, text, status, createdAt, updatedAt FROM tasks WHERE status=?"),
-//                        any(RowMapper.class),
-//                        eq("inbox")
-//                );
-//        assertEquals(mockTasks, answer);
-//    }
+    @Test
+    public void testGetAllTasks() {
+        String owner = UUID.randomUUID().toString();
+        String status = "inbox";
+        String order = "desc";
+        int page = 1;
+        int size = 20;
+        List<Task> mockTasks = mock(List.class);
+        when(mockJdbcOperations.query(
+                anyString(), any(RowMapper.class),
+                anyString(), anyString(), anyInt(), anyInt())
+        ).thenReturn(mockTasks);
+
+        List<Task> answer = taskRepository.getTasks(owner, status, order, page, size);
+        verify(mockJdbcOperations, times(1))
+                .query(
+                        eq("SELECT id,text,status,createdAt,updatedAt,owner FROM tasks WHERE owner=? AND status=? ORDER BY createdAt DESC OFFSET ? LIMIT ?"),
+                        testMapper,
+                        eq(owner),
+                        eq(status),
+                        eq(page),
+                        eq(size)
+                );
+        assertEquals(mockTasks, answer);
+    }
 
     @Test
     public void testGetTaskById() {

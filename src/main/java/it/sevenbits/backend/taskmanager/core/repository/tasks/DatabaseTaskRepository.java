@@ -6,12 +6,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.util.Optional;
-import java.util.Collections;
-import java.util.List;
-import java.util.TimeZone;
 import java.util.UUID;
+import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.TimeZone;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Instant;
 import java.text.DateFormat;
@@ -43,14 +45,17 @@ public class DatabaseTaskRepository implements TaskRepository {
         this.dateFormat = new SimpleDateFormat(DATE_FORMAT);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        this.taskMapper = (resultSet, i) -> {
-            String taskId = resultSet.getString(TASK_ID);
-            String taskText = resultSet.getString(TEXT);
-            String taskStatus = resultSet.getString(STATUS);
-            String creationDate = resultSet.getString(CREATED_AT);
-            String updateDate = resultSet.getString(UPDATED_AT);
-            String ownerId = resultSet.getString(OWNER_ID);
-            return new Task(taskId, taskText, taskStatus, creationDate, updateDate, ownerId);
+        this.taskMapper = new RowMapper<Task>() {
+            @Override
+            public Task mapRow(ResultSet resultSet, int i) throws SQLException {
+                String taskId = resultSet.getString(TASK_ID);
+                String taskText = resultSet.getString(TEXT);
+                String taskStatus = resultSet.getString(STATUS);
+                String creationDate = resultSet.getString(CREATED_AT);
+                String updateDate = resultSet.getString(UPDATED_AT);
+                String ownerId = resultSet.getString(OWNER_ID);
+                return new Task(taskId, taskText, taskStatus, creationDate, updateDate, ownerId);
+            }
         };
     }
 
