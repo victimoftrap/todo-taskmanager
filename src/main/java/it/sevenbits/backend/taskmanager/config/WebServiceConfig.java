@@ -5,9 +5,9 @@ import it.sevenbits.backend.taskmanager.core.repository.users.UsersRepository;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskService;
 import it.sevenbits.backend.taskmanager.web.service.tasks.TaskServiceImpl;
 import it.sevenbits.backend.taskmanager.web.service.users.UsersService;
-import it.sevenbits.backend.taskmanager.web.service.users.WebUsersService;
+import it.sevenbits.backend.taskmanager.web.service.users.UsersServiceImpl;
 import it.sevenbits.backend.taskmanager.web.service.signin.SignInService;
-import it.sevenbits.backend.taskmanager.web.service.signin.WebSignInService;
+import it.sevenbits.backend.taskmanager.web.service.signin.SignInServiceImpl;
 import it.sevenbits.backend.taskmanager.web.service.signup.SignUpService;
 import it.sevenbits.backend.taskmanager.web.service.signup.SignUpServiceImpl;
 import it.sevenbits.backend.taskmanager.web.service.whoami.WhoAmIService;
@@ -63,7 +63,7 @@ public class WebServiceConfig {
             @Qualifier("usersRepository") final UsersRepository usersRepository,
             @Qualifier("idValidator") final Verifiable<String> idValidator,
             @Qualifier("userRoleValidator") final Verifiable<String> userRoleValidator) {
-        return new WebUsersService(usersRepository, idValidator, userRoleValidator);
+        return new UsersServiceImpl(usersRepository, idValidator, userRoleValidator);
     }
 
     /**
@@ -90,7 +90,7 @@ public class WebServiceConfig {
     public SignInService signInService(
             @Qualifier("usersRepository") final UsersRepository usersRepository,
             @Qualifier("passwordEncoder") final PasswordEncoder passwordEncoder) {
-        return new WebSignInService(usersRepository, passwordEncoder);
+        return new SignInServiceImpl(usersRepository, passwordEncoder);
     }
 
     /**

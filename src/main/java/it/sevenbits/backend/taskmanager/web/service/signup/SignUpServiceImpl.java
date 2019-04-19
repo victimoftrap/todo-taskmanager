@@ -29,8 +29,9 @@ public class SignUpServiceImpl implements SignUpService {
 
     /**
      * Create new account for user
+     *
      * @param request request with user personal data
-     * @return
+     * @return response with user ID or null if user with received username are already exists
      */
     @Override
     public SignUpResponse createAccount(final SignUpRequest request) {

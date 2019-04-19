@@ -77,13 +77,9 @@ public class DatabaseUsersRepository implements UsersRepository {
             return null;
         }
 
-        List<String> authorities = new ArrayList<>();
-        jdbcOperations.query(
+        List<String> authorities = jdbcOperations.query(
                 "SELECT authority FROM authorities WHERE userId = ?",
-                resultSet -> {
-                    String authority = resultSet.getString(AUTHORITY);
-                    authorities.add(authority);
-                },
+                (resultSet, i) -> resultSet.getString(AUTHORITY),
                 id
         );
 

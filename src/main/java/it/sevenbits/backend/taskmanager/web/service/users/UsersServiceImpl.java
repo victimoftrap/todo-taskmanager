@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Service that validates requests to part of database with users and generates responses
  */
-public class WebUsersService implements UsersService {
+public class UsersServiceImpl implements UsersService {
     private final UsersRepository repository;
     private final Verifiable<String> idValidator;
     private final Verifiable<String> userRoleValidator;
@@ -23,9 +23,9 @@ public class WebUsersService implements UsersService {
      * @param idValidator       validator of received ID
      * @param userRoleValidator validator of received user roles
      */
-    public WebUsersService(final UsersRepository repository,
-                           final Verifiable<String> idValidator,
-                           final Verifiable<String> userRoleValidator) {
+    public UsersServiceImpl(final UsersRepository repository,
+                            final Verifiable<String> idValidator,
+                            final Verifiable<String> userRoleValidator) {
         this.repository = repository;
         this.idValidator = idValidator;
         this.userRoleValidator = userRoleValidator;

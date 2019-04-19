@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * Service that verifying authentication user data
  */
 @Service
-public class WebSignInService implements SignInService {
+public class SignInServiceImpl implements SignInService {
     private UsersRepository repository;
     private PasswordEncoder passwordEncoder;
 
@@ -21,7 +21,7 @@ public class WebSignInService implements SignInService {
      * @param repository      repository with users
      * @param passwordEncoder encoder, that verifying data
      */
-    public WebSignInService(final UsersRepository repository, final PasswordEncoder passwordEncoder) {
+    public SignInServiceImpl(final UsersRepository repository, final PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
     }
