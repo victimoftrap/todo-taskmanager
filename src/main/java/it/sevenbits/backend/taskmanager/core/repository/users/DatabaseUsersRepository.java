@@ -117,7 +117,7 @@ public class DatabaseUsersRepository implements UsersRepository {
 
         jdbcOperations.query(query, new RowMapper<User>() {
             @Override
-            public User mapRow(ResultSet resultSet, int i) throws SQLException {
+            public User mapRow(final ResultSet resultSet, final int i) throws SQLException {
                 String id = resultSet.getString(ID);
                 String username = resultSet.getString(USERNAME);
                 String password = resultSet.getString(PASSWORD);

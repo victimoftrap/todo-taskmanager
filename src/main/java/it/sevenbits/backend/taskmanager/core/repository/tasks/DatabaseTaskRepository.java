@@ -47,7 +47,7 @@ public class DatabaseTaskRepository implements TaskRepository {
 
         this.taskMapper = new RowMapper<Task>() {
             @Override
-            public Task mapRow(ResultSet resultSet, int i) throws SQLException {
+            public Task mapRow(final ResultSet resultSet, final int i) throws SQLException {
                 String taskId = resultSet.getString(TASK_ID);
                 String taskText = resultSet.getString(TEXT);
                 String taskStatus = resultSet.getString(STATUS);
