@@ -209,4 +209,17 @@ public class DatabaseUsersRepositoryTest {
                         eq(id)
                 );
     }
+
+    @Test
+    public void testFindAllTasks() {
+        List<User> mockUsers = mock(List.class);
+        when(mockJdbcOperations.query(anyString(), any(RowMapper.class))).thenReturn(mockUsers);
+
+        List<User> answer = usersRepository.findAll();
+        verify(mockJdbcOperations, times(1))
+                .query(
+                        eq("SELECT id, username, password, authority FROM users JOIN authorities ON id = userId WHERE enabled = true"),
+                        any(RowMapper.class)
+                );
+    }
 }

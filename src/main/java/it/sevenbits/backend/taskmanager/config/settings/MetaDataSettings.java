@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * Class with default metadata settings
  */
 @Component
-public final class MetaDataSettings {
+public class MetaDataSettings {
     private String status;
     private String order;
     private Integer page;

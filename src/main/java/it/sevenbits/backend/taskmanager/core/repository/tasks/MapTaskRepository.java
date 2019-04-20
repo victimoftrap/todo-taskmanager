@@ -62,7 +62,7 @@ public class MapTaskRepository implements TaskRepository {
             }
             if (i >= offset) {
                 Task task = stringTaskEntry.getValue();
-                if (task.getStatus().equals(status)) {
+                if (task.getStatus().equals(status) && task.getOwner().equals(owner)) {
                     result.add(task);
                 }
             }
@@ -83,7 +83,7 @@ public class MapTaskRepository implements TaskRepository {
     }
 
     @Override
-    public int getCountTasks(final String status, final String owner) {
+    public int getCountTasks(final String owner, final String status) {
         int count = (int) tasks
                 .values()
                 .stream()

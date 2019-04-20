@@ -86,9 +86,11 @@ public class DatabaseTaskRepository implements TaskRepository {
     @Override
     public List<Task> getTasks(final String owner, final String status, final String order, final int page, final int size) {
         String ascQuery =
-                "SELECT id,text,status,createdAt,updatedAt,owner FROM tasks WHERE owner=? AND status=? ORDER BY createdAt ASC OFFSET ? LIMIT ?";
+                "SELECT id, text, status, createdAt, updatedAt, owner FROM tasks" +
+                        " WHERE owner=? AND status=? ORDER BY createdAt ASC OFFSET ? LIMIT ?";
         String descQuery =
-                "SELECT id,text,status,createdAt,updatedAt,owner FROM tasks WHERE owner=? AND status=? ORDER BY createdAt DESC OFFSET ? LIMIT ?";
+                "SELECT id, text, status, createdAt, updatedAt, owner FROM tasks" +
+                        " WHERE owner=? AND status=? ORDER BY createdAt DESC OFFSET ? LIMIT ?";
         String query = "asc".equalsIgnoreCase(order) ? ascQuery : descQuery;
         int offset = (page - 1) * size;
 

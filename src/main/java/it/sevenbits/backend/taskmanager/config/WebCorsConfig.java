@@ -8,8 +8,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+/**
+ * Create global filter based CORS configuration
+ */
 @Configuration
 public class WebCorsConfig {
+    /**
+     * Create CORS configuration
+     * @return configuration
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
