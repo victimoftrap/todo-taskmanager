@@ -1,6 +1,8 @@
 server:
   port: 8080
 spring:
+  profiles:
+    active: DEVELOP
   flyway:
     baseline-on-migrate: true
   datasource:
@@ -23,3 +25,10 @@ configuration:
     page-size: 25
     min-page-size: 10
     max-page-size: 50
+
+logging:
+  path: log
+  file: app_logs.log
+
+app:
+  name: 'todo-taskmanager'
