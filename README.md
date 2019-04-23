@@ -7,25 +7,13 @@ You can easily add new task and marked it 'done' when you will done this task
 
 Install software that used in this application 
 
-###Prerequisites
+### Prerequisites
 
-Install JDK. On the command line, type
+To run this application you need to install: 
 
-```bash
-$ sudo apt-get install openjdk-8-jdk
-```
-
-Install Apache Maven for building this project
-
-```bash
-$ sudo apt install maven
-```
-
-Install PostgreSQL. You may use this command
-
-```bash
-$ sudo apt-get install postgresql
-```
+- [OpenJDK](https://openjdk.java.net/install/) or [Oracle JDK](https://www.oracle.com/technetwork/java/javase/downloads/index.html), version 1.8 or later
+- [Apache Maven](https://maven.apache.org/download.cgi)
+- [PostgreSQL](https://www.postgresql.org/download/) 9.6
 
 ### Installation
 
