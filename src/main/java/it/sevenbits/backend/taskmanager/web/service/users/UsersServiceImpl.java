@@ -7,6 +7,7 @@ import it.sevenbits.backend.taskmanager.web.model.requests.UpdateUserRequest;
 import it.sevenbits.backend.taskmanager.web.model.responses.UpdateUserResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service that validates requests to part of database with users and generates responses
@@ -36,7 +37,7 @@ public class UsersServiceImpl implements UsersService {
         if (id == null || !idValidator.verify(id)) {
             return null;
         }
-        return repository.findUserById(id);
+        return repository.findUserById(id, false);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class UsersServiceImpl implements UsersService {
         if (name == null) {
             return null;
         }
-        return repository.findUserByName(name);
+        return repository.findUserByName(name, false);
     }
 
     @Override
@@ -56,16 +57,24 @@ public class UsersServiceImpl implements UsersService {
     public UpdateUserResponse updateUser(final String id, final UpdateUserRequest request) {
         User needed = getUserById(id);
         if (needed == null) {
-            return new UpdateUserResponse("");
+            return null;
         }
 
+        boolean enabled = Optional
+                .ofNullable(request.isEnabled())
+                .orElse(true);
         List<String> roles = request.getAuthorities();
-        for (String role : roles) {
-            if (!userRoleValidator.verify(role)) {
-                return null;
+        if (roles != null) {
+            for (String role : roles) {
+                if (!userRoleValidator.verify(role)) {
+                    return new UpdateUserResponse("");
+                }
             }
+        } else {
+            roles = needed.getAuthorities();
         }
-        User updatedAccount = new User(id, needed.getUsername(), needed.getPassword(), request.isEnabled(), roles);
+
+        User updatedAccount = new User(id, needed.getUsername(), needed.getPassword(), enabled, roles);
         repository.updateUser(updatedAccount);
         return new UpdateUserResponse(id);
     }

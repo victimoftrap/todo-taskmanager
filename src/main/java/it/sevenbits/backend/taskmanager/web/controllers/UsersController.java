@@ -93,12 +93,12 @@ public class UsersController {
         UpdateUserResponse response = usersService.updateUser(id, request);
         if (response == null) {
             return ResponseEntity
-                    .badRequest()
+                    .notFound()
                     .build();
         }
         if (response.getId().isEmpty()) {
             return ResponseEntity
-                    .notFound()
+                    .badRequest()
                     .build();
         }
         return ResponseEntity

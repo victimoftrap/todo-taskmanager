@@ -25,6 +25,7 @@ public class DatabaseUsersRepository implements UsersRepository {
     private final String ID = "id";
     private final String USERNAME = "username";
     private final String PASSWORD = "password";
+    private final String ENABLED = "enabled";
     private final String AUTHORITY = "authority";
     private final String ROLE_ADMIN = "ADMIN";
     private final String ROLE_USER = "USER";
@@ -36,6 +37,20 @@ public class DatabaseUsersRepository implements UsersRepository {
      */
     public DatabaseUsersRepository(final JdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
+    }
+
+    /**
+     * Get authorities for user
+     *
+     * @param id ID of the user
+     * @return list with authorities
+     */
+    private List<String> getUserAuthorities(final String id) {
+        return jdbcOperations.query(
+                "SELECT authority FROM authorities WHERE userId = ?",
+                (resultSet, i) -> resultSet.getString(AUTHORITY),
+                id
+        );
     }
 
     @Override
@@ -67,34 +82,48 @@ public class DatabaseUsersRepository implements UsersRepository {
 
     @Override
     public User findUserById(final String id) {
+        return findUserById(id, true);
+    }
+
+    @Override
+    public User findUserById(final String id, final boolean onlyEnabled) {
+        final String allQuery = "SELECT id, username, password, enabled FROM users WHERE id = ?";
+        final String enabledQuery =
+                "SELECT id, username, password, enabled FROM users WHERE enabled = true AND id = ?";
+        String query = onlyEnabled ? enabledQuery : allQuery;
+
         Map<String, Object> rawUser;
         try {
             rawUser = jdbcOperations.queryForMap(
-                    "SELECT id, username, password FROM users WHERE enabled = true AND id = ?",
-                    id
+                    query, id
             );
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         }
-
-        List<String> authorities = jdbcOperations.query(
-                "SELECT authority FROM authorities WHERE userId = ?",
-                (resultSet, i) -> resultSet.getString(AUTHORITY),
-                id
-        );
+        List<String> authorities = getUserAuthorities(id);
 
         String username = String.valueOf(rawUser.get(USERNAME));
         String password = String.valueOf(rawUser.get(PASSWORD));
-        return new User(id, username, password, true, authorities);
+        boolean enabled = Boolean.valueOf(String.valueOf(rawUser.get(ENABLED)));
+        return new User(id, username, password, enabled, authorities);
     }
 
     @Override
     public User findUserByName(final String username) {
+        return findUserByName(username, true);
+    }
+
+    @Override
+    public User findUserByName(final String username, final boolean onlyEnabled) {
+        final String allQuery = "SELECT id, username, password, enabled FROM users WHERE username = ?";
+        final String enabledQuery =
+                "SELECT id, username, password, enabled FROM users WHERE enabled = true AND username = ?";
+        String query = onlyEnabled ? enabledQuery : allQuery;
+
         Map<String, Object> rawUser;
         try {
             rawUser = jdbcOperations.queryForMap(
-                    "SELECT id, username, password FROM users WHERE enabled = true AND username = ?",
-                    username
+                    query, username
             );
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
@@ -102,30 +131,36 @@ public class DatabaseUsersRepository implements UsersRepository {
 
         String id = String.valueOf(rawUser.get(ID));
         String password = String.valueOf(rawUser.get(PASSWORD));
-        List<String> authorities = jdbcOperations.query(
-                "SELECT authority FROM authorities WHERE userId = ?",
-                (resultSet, i) -> resultSet.getString(AUTHORITY),
-                id
-        );
-        return new User(id, username, password, true, authorities);
+        boolean enabled = Boolean.valueOf(String.valueOf(rawUser.get(ENABLED)));
+        List<String> authorities = getUserAuthorities(id);
+        return new User(id, username, password, enabled, authorities);
     }
 
     @Override
     public List<User> findAll() {
-        String query = "SELECT id, username, password, authority FROM users JOIN authorities ON id = userId WHERE enabled = true";
-        Map<String, User> users = new HashMap<>();
+        return findAll(true);
+    }
 
+    @Override
+    public List<User> findAll(final boolean onlyEnabled) {
+        final String allQuery = "SELECT id, username, password, enabled, authority FROM users JOIN authorities ON id = userId";
+        final String enabledQuery =
+                "SELECT id, username, password, enabled, authority FROM users JOIN authorities ON id = userId WHERE enabled = true";
+        String query = onlyEnabled ? enabledQuery : allQuery;
+
+        Map<String, User> users = new HashMap<>();
         jdbcOperations.query(query, new RowMapper<User>() {
             @Override
             public User mapRow(final ResultSet resultSet, final int i) throws SQLException {
                 String id = resultSet.getString(ID);
                 String username = resultSet.getString(USERNAME);
                 String password = resultSet.getString(PASSWORD);
+                boolean enabled = resultSet.getBoolean(ENABLED);
                 String newRole = resultSet.getString(AUTHORITY);
 
                 User user = users.computeIfAbsent(
                         id,
-                        none -> new User(id, username, password, true, new ArrayList<>())
+                        none -> new User(id, username, password, enabled, new ArrayList<>())
                 );
                 List<String> roles = user.getAuthorities();
                 roles.add(newRole);

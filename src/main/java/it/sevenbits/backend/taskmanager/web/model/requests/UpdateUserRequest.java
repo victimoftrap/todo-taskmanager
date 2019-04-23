@@ -2,14 +2,12 @@ package it.sevenbits.backend.taskmanager.web.model.requests;
 
 import java.util.List;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
 
 /**
  * Request for updating user account
  */
 public class UpdateUserRequest {
-    @NotNull
-    private final boolean enabled;
+    private final Boolean enabled;
     private final List<String> authorities;
 
     /**
@@ -18,7 +16,7 @@ public class UpdateUserRequest {
      * @param enabled     user account activity
      * @param authorities list wit new authorities
      */
-    public UpdateUserRequest(final boolean enabled, final List<String> authorities) {
+    public UpdateUserRequest(final Boolean enabled, final List<String> authorities) {
         this.enabled = enabled;
         this.authorities = authorities;
     }
@@ -28,7 +26,7 @@ public class UpdateUserRequest {
      *
      * @return status
      */
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
@@ -49,9 +47,9 @@ public class UpdateUserRequest {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UpdateUserRequest that = (UpdateUserRequest) o;
-        return enabled == that.enabled &&
-                Objects.equals(authorities, that.authorities);
+        UpdateUserRequest request = (UpdateUserRequest) o;
+        return Objects.equals(enabled, request.enabled) &&
+                Objects.equals(authorities, request.authorities);
     }
 
     @Override
