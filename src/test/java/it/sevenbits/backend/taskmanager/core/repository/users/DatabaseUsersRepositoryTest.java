@@ -89,7 +89,7 @@ public class DatabaseUsersRepositoryTest {
         User answer = usersRepository.findUserById(id);
         verify(mockJdbcOperations, times(1))
                 .queryForMap(
-                        eq("SELECT id, username, password FROM users WHERE enabled = true AND id = ?"),
+                        eq("SELECT id, username, password, enabled FROM users WHERE enabled = true AND id = ?"),
                         eq(id)
                 );
         verify(mockJdbcOperations, times(1))
@@ -113,7 +113,7 @@ public class DatabaseUsersRepositoryTest {
         User answer = usersRepository.findUserById(id);
         verify(mockJdbcOperations, times(1))
                 .queryForMap(
-                        eq("SELECT id, username, password FROM users WHERE enabled = true AND id = ?"),
+                        eq("SELECT id, username, password, enabled FROM users WHERE enabled = true AND id = ?"),
                         eq(id)
                 );
         assertNull(answer);
@@ -132,7 +132,7 @@ public class DatabaseUsersRepositoryTest {
         User answer = usersRepository.findUserByName(name);
         verify(mockJdbcOperations, times(1))
                 .queryForMap(
-                        eq("SELECT id, username, password FROM users WHERE enabled = true AND username = ?"),
+                        eq("SELECT id, username, password, enabled FROM users WHERE enabled = true AND username = ?"),
                         eq(name)
                 );
         verify(mockJdbcOperations, times(1))
@@ -157,7 +157,7 @@ public class DatabaseUsersRepositoryTest {
         User answer = usersRepository.findUserByName(name);
         verify(mockJdbcOperations, times(1))
                 .queryForMap(
-                        eq("SELECT id, username, password FROM users WHERE enabled = true AND username = ?"),
+                        eq("SELECT id, username, password, enabled FROM users WHERE enabled = true AND username = ?"),
                         eq(name)
                 );
         assertNull(answer);
@@ -218,7 +218,7 @@ public class DatabaseUsersRepositoryTest {
         List<User> answer = usersRepository.findAll();
         verify(mockJdbcOperations, times(1))
                 .query(
-                        eq("SELECT id, username, password, authority FROM users JOIN authorities ON id = userId WHERE enabled = true"),
+                        eq("SELECT id, username, password, enabled, authority FROM users JOIN authorities ON id = userId WHERE enabled = true"),
                         any(RowMapper.class)
                 );
     }

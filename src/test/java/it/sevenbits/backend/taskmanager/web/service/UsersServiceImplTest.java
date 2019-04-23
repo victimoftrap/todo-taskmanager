@@ -40,11 +40,11 @@ public class UsersServiceImplTest {
 
     @Test
     public void testFindById() {
-        when(mockRepository.findUserById(anyString())).thenReturn(mockUser);
+        when(mockRepository.findUserById(anyString(), anyBoolean())).thenReturn(mockUser);
 
         User answer = usersService.getUserById(id);
         verify(mockRepository, times(1))
-                .findUserById(id);
+                .findUserById(id, false);
 
         assertEquals(mockUser, answer);
     }
@@ -70,11 +70,11 @@ public class UsersServiceImplTest {
 
     @Test
     public void testFindByName() {
-        when(mockRepository.findUserByName(anyString())).thenReturn(mockUser);
+        when(mockRepository.findUserByName(anyString(), anyBoolean())).thenReturn(mockUser);
 
         User answer = usersService.getUserByName("Scott Pilgrim");
         verify(mockRepository, times(1))
-                .findUserByName("Scott Pilgrim");
+                .findUserByName("Scott Pilgrim", false);
 
         assertEquals(mockUser, answer);
     }
@@ -95,8 +95,8 @@ public class UsersServiceImplTest {
 
         when(mockUser.getUsername()).thenReturn("Scott");
         when(mockUser.getPassword()).thenReturn("awesome-zombie-duck");
-        when(mockRepository.findUserById(anyString())).thenReturn(mockUser);
-        when(mockRepository.updateUser(any(User.class))).thenReturn(any(User.class));
+        when(mockRepository.findUserById(anyString(), anyBoolean())).thenReturn(mockUser);
+        when(mockRepository.updateUser(any(User.class))).thenReturn(mockUser);
 
         UpdateUserResponse response = usersService.updateUser(id, request);
         verify(mockRepository, times(1))
@@ -108,7 +108,7 @@ public class UsersServiceImplTest {
     @Test
     public void testUpdateUserButItNotFound() {
         UpdateUserResponse response = usersService.updateUser(id, mock(UpdateUserRequest.class));
-        assertEquals("", response.getId());
+        assertNull(response);
     }
 
     @Test
@@ -118,10 +118,10 @@ public class UsersServiceImplTest {
         Collections.addAll(auths, "USER", "DUDE");
         UpdateUserRequest request = new UpdateUserRequest(enabled, auths);
 
-        when(mockRepository.findUserById(anyString())).thenReturn(mockUser);
+        when(mockRepository.findUserById(anyString(), anyBoolean())).thenReturn(mockUser);
 
         UpdateUserResponse response = usersService.updateUser(id, request);
 
-        assertNull(response);
+        assertTrue(response.getId().isEmpty());
     }
 }

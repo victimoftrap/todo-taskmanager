@@ -80,7 +80,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void testNotFoundForUpdateAccount() {
+    public void testBadRequestForUpdateAccount() {
         boolean enabled = true;
         List<String> auths = mock(List.class);
         UpdateUserRequest request = new UpdateUserRequest(enabled, auths);
@@ -92,18 +92,18 @@ public class UsersControllerTest {
         verify(mockUsersService, times(1))
                 .updateUser(id, request);
 
-        assertEquals(HttpStatus.NOT_FOUND, answer.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, answer.getStatusCode());
         assertNull(answer.getBody());
     }
 
     @Test
-    public void testBadRequestForUpdateAccount() {
+    public void testNotFoundForUpdateAccount() {
         boolean enabled = true;
         List<String> auths = mock(List.class);
         UpdateUserRequest request = new UpdateUserRequest(enabled, auths);
 
         ResponseEntity<Void> answer = usersController.updateUserAccount(id, request);
-        assertEquals(HttpStatus.BAD_REQUEST, answer.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, answer.getStatusCode());
         assertNull(answer.getBody());
     }
 }

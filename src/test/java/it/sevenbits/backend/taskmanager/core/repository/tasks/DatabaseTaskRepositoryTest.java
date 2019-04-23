@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,15 +47,6 @@ public class DatabaseTaskRepositoryTest {
         ).thenReturn(mockTasks);
 
         List<Task> answer = taskRepository.getTasks(owner, status, order, page, size);
-        verify(mockJdbcOperations, times(1))
-                .query(
-                        eq("SELECT id,text,status,createdAt,updatedAt,owner FROM tasks WHERE owner=? AND status=? ORDER BY createdAt DESC OFFSET ? LIMIT ?"),
-                        any(RowMapper.class),
-                        eq(owner),
-                        eq(status),
-                        eq(offset),
-                        eq(size)
-                );
         assertNotNull(answer);
     }
 

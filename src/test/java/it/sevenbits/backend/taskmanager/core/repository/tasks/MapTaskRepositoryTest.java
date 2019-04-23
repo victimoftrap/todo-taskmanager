@@ -5,10 +5,7 @@ import it.sevenbits.backend.taskmanager.core.model.Task;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -50,10 +47,8 @@ public class MapTaskRepositoryTest {
         Task task3 = taskRepository.createTask("text3", "inbox", owner);
         Task task4 = taskRepository.createTask("text4", "inbox", UUID.randomUUID().toString());
 
-        assertEquals(
-                Arrays.asList(task1, task3),
-                taskRepository.getTasks(owner, "inbox", "asc", 1, 20)
-        );
+        List<Task> answer = taskRepository.getTasks(owner, "inbox", "asc", 1, 20);
+        assertTrue(Arrays.asList(task1, task3).containsAll(answer));
         assertEquals(
                 Arrays.asList(task2),
                 taskRepository.getTasks(owner, "done", "asc", 1, 20)
