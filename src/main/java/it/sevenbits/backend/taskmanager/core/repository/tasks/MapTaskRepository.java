@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
  * Basic implementation of TaskRepository
  */
 public class MapTaskRepository implements TaskRepository {
-    private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     private DateFormat dateFormat;
     private Map<String, Task> tasks;
     private Comparator<Task> ascComparator;

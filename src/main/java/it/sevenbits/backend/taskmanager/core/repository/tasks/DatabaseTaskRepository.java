@@ -23,17 +23,17 @@ import java.text.SimpleDateFormat;
  * Implementation of task repository based on connection to database
  */
 public class DatabaseTaskRepository implements TaskRepository {
-    private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     private DateFormat dateFormat;
     private RowMapper<Task> taskMapper;
     private JdbcOperations jdbcOperations;
 
-    private final String TASK_ID = "id";
-    private final String TEXT = "text";
-    private final String STATUS = "status";
-    private final String CREATED_AT = "createdAt";
-    private final String UPDATED_AT = "updatedAt";
-    private final String OWNER_ID = "owner";
+    private static final String TASK_ID = "id";
+    private static final String TEXT = "text";
+    private static final String STATUS = "status";
+    private static final String CREATED_AT = "createdAt";
+    private static final String UPDATED_AT = "updatedAt";
+    private static final String OWNER_ID = "owner";
 
     /**
      * Create repository

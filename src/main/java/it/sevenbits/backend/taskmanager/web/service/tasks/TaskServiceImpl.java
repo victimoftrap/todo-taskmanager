@@ -161,10 +161,10 @@ public class TaskServiceImpl implements TaskService {
         String firstPage = buildUriFor(status, order, 1, size);
         String lastPage = buildUriFor(status, order, pagesCount, size);
         String nextPage = page == pagesCount
-                ? ""
+                ? null
                 : buildUriFor(status, order, page + 1, size);
         String prevPage = page == 1
-                ? ""
+                ? null
                 : buildUriFor(status, order, page - 1, size);
         GetTasksMetaData meta = new GetTasksMetaData(totalCount, page, size, nextPage, prevPage, firstPage, lastPage);
         return new GetTasksResponse(meta, tasks);

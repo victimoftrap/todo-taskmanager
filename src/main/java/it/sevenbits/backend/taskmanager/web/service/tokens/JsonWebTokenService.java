@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class JsonWebTokenService implements JwtTokenService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final JwtSettings settings;
-    private final String AUTHORITIES = "authorities";
+    private static final String AUTHORITIES = "authorities";
 
     /**
      * Create token service

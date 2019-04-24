@@ -22,13 +22,13 @@ import java.sql.SQLException;
  */
 public class DatabaseUsersRepository implements UsersRepository {
     private JdbcOperations jdbcOperations;
-    private final String ID = "id";
-    private final String USERNAME = "username";
-    private final String PASSWORD = "password";
-    private final String ENABLED = "enabled";
-    private final String AUTHORITY = "authority";
-    private final String ROLE_ADMIN = "ADMIN";
-    private final String ROLE_USER = "USER";
+    private static final String ID = "id";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String ENABLED = "enabled";
+    private static final String AUTHORITY = "authority";
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final String ROLE_USER = "USER";
 
     /**
      * Create repository
